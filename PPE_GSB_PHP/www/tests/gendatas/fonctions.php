@@ -16,15 +16,15 @@
  */
 
 /**
- * Fonction qui retourne la liste des visiteurs
+ * Fonction qui retourne la liste des membres
  *
  * @param PDO $pdo instance de la classe PDO utilisée pour se connecter
  *
- * @return Array de visiteurs
+ * @return Array de membres
  */
-function getLesVisiteurs($pdo)
+function getLesMembres($pdo)
 {
-    $req = 'select * from visiteur';
+    $req = 'select * from membre';
     $res = $pdo->query($req);
     $lesLignes = $res->fetchAll();
     return $lesLignes;
@@ -134,12 +134,12 @@ function getMoisPrecedent($mois)
 function creationFichesFrais($pdo)
 {
     global $moisDebut; // valeur dans majGSB.php
-    $lesVisiteurs = getLesVisiteurs($pdo);
+    $lesMembres = getLesMembres($pdo);
     $moisActuel = getMois(date('d/m/Y'));
     $moisFin = getMoisPrecedent($moisActuel);
-    foreach ($lesVisiteurs as $unVisiteur) {
+    foreach ($lesMembres as $unMembre) {
         $moisCourant = $moisFin;
-        $idVisiteur = $unVisiteur['id'];
+        $idMembre = $unMembre['id'];
         $n = 1;
         while ($moisCourant >= $moisDebut) {
             if ($n == 1) {
@@ -158,9 +158,9 @@ function creationFichesFrais($pdo)
             $numMois = substr($moisModif, 4, 2);
             $dateModif = $numAnnee . '-' . $numMois . '-' . rand(1, 8);
             $nbJustificatifs = rand(0, 12);
-            $req = 'insert into fichefrais(idvisiteur,mois,nbjustificatifs,'
+            $req = 'insert into fichefrais(idmembre,mois,nbjustificatifs,'
                 . 'montantvalide,datemodif,idetat) '
-                . "values ('$idVisiteur','$moisCourant',$nbJustificatifs,"
+                . "values ('$idMembre','$moisCourant',$nbJustificatifs,"
                 . "0,'$dateModif','$etat');";
             $pdo->exec($req);
             $moisCourant = getMoisPrecedent($moisCourant);
@@ -181,7 +181,7 @@ function creationFraisForfait($pdo)
     $lesFichesFrais = getLesFichesFrais($pdo);
     $lesIdFraisForfait = getLesIdFraisForfait($pdo);
     foreach ($lesFichesFrais as $uneFicheFrais) {
-        $idVisiteur = $uneFicheFrais['idvisiteur'];
+        $idMembre = $uneFicheFrais['idmembre'];
         $mois = $uneFicheFrais['mois'];
         foreach ($lesIdFraisForfait as $unIdFraisForfait) {
             $idFraisForfait = $unIdFraisForfait['id'];
@@ -190,9 +190,9 @@ function creationFraisForfait($pdo)
             } else {
                 $quantite = rand(2, 20);
             }
-            $req = 'insert into lignefraisforfait(idvisiteur,mois,'
+            $req = 'insert into lignefraisforfait(idmembre,mois,'
                 . 'idfraisforfait,quantite) '
-                . "values('$idVisiteur','$mois','$idFraisForfait',$quantite);";
+                . "values('$idMembre','$mois','$idFraisForfait',$quantite);";
             $pdo->exec($req);
         }
     }
@@ -263,20 +263,20 @@ function getDesFraisHorsForfait()
  *
  * @return null
  */
-function updateMdpVisiteur($pdo)
+function updateMdpMembre($pdo)
 {
-    $req = 'select * from visiteur';
+    $req = 'select * from membre';
     $res = $pdo->query($req);
     $lesLignes = $res->fetchAll();
     $lettres = 'azertyuiopqsdfghjkmwxcvbn123456789';
-    foreach ($lesLignes as $unVisiteur) {
+    foreach ($lesLignes as $unMembre) {
         $mdp = '';
-        $id = $unVisiteur['id'];
+        $id = $unMembre['id'];
         for ($i = 1; $i <= 5; $i++) {
             $uneLettrehasard = substr($lettres, rand(33, 1), 1);
             $mdp = $mdp . $uneLettrehasard;
         }
-        $req = "update visiteur set mdp ='$mdp' where visiteur.id ='$id' ";
+        $req = "update membre set mdp ='$mdp' where membre.id ='$id' ";
         $pdo->exec($req);
     }
 }
@@ -294,7 +294,7 @@ function creationFraisHorsForfait($pdo)
     $lesFichesFrais = getLesFichesFrais($pdo);
 
     foreach ($lesFichesFrais as $uneFicheFrais) {
-        $idVisiteur = $uneFicheFrais['idvisiteur'];
+        $idMembre = $uneFicheFrais['idmembre'];
         $mois = $uneFicheFrais['mois'];
         $nbFrais = rand(0, 5);
         for ($i = 0; $i <= $nbFrais; $i++) {
@@ -311,9 +311,9 @@ function creationFraisHorsForfait($pdo)
                 $hasardJour = '0' . $hasardJour;
             }
             $hasardMois = $numAnnee . '-' . $numMois . '-' . $hasardJour;
-            $req = 'insert into lignefraishorsforfait(idvisiteur,mois,libelle,'
+            $req = 'insert into lignefraishorsforfait(idmembre,mois,libelle,'
                     . 'date,montant) '
-                    . "values('$idVisiteur','$mois','$lib','$hasardMois',"
+                    . "values('$idMembre','$mois','$lib','$hasardMois',"
                     . "$hasardMontant);";
             $pdo->exec($req);
         }
@@ -349,10 +349,10 @@ function majFicheFrais($pdo)
 {
     $lesFichesFrais = getLesFichesFrais($pdo);
     foreach ($lesFichesFrais as $uneFicheFrais) {
-        $idVisiteur = $uneFicheFrais['idvisiteur'];
+        $idMembre = $uneFicheFrais['idmembre'];
         $mois = $uneFicheFrais['mois'];
         $req = 'select sum(montant) as cumul from lignefraishorsforfait '
-            . "where lignefraishorsforfait.idvisiteur = '$idVisiteur' "
+            . "where lignefraishorsforfait.idmembre = '$idMembre' "
             . "and lignefraishorsforfait.mois = '$mois' ";
         $res = $pdo->query($req);
         $ligne = $res->fetch();
@@ -361,7 +361,7 @@ function majFicheFrais($pdo)
                 . 'as cumul '
                 . 'from lignefraisforfait, fraisforfait '
                 . 'where lignefraisforfait.idfraisforfait = fraisforfait.id '
-                . "and lignefraisforfait.idvisiteur = '$idVisiteur' "
+                . "and lignefraisforfait.idmembre = '$idMembre' "
                 . "and lignefraisforfait.mois = '$mois' ";
         $res = $pdo->query($req);
         $ligne = $res->fetch();
@@ -374,7 +374,7 @@ function majFicheFrais($pdo)
             $montantValide = $montantEngage * rand(80, 100) / 100;
         }
         $req = "update fichefrais set montantvalide = $montantValide "
-            . "where idvisiteur = '$idVisiteur' and mois = '$mois'";
+            . "where idmembre = '$idMembre' and mois = '$mois'";
         $pdo->exec($req);
     }
 }
