@@ -100,9 +100,11 @@ class PdoGsb
             'SELECT membre.id AS id, membre.nom AS nom, '
             . 'membre.prenom AS prenom '
             . 'FROM membre '
-            . 'WHERE membre.login = :unLogin'
+            . 'WHERE membre.login = :unLogin '
+            . 'AND membre.mdp = :unMdp '
         );
         $requetePrepare->bindParam(':unLogin', $login, PDO::PARAM_STR);
+        $requetePrepare->bindParam(':unMdp', $mdp, PDO::PARAM_STR);
         $requetePrepare->execute();
 
         return $requetePrepare->fetch();

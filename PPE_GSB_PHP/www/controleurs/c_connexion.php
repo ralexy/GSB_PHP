@@ -28,8 +28,6 @@ case 'valideConnexion':
     $mdp = filter_input(INPUT_POST, 'mdp', FILTER_SANITIZE_STRING);
     $membre = $pdo->getInfosMembre($login, $mdp);
 
-    var_dump($membre);
-
     if (!is_array($membre)) {
         ajouterErreur('Login ou mot de passe incorrect');
         include 'vues/v_erreurs.php';
