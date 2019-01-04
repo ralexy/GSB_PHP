@@ -96,10 +96,12 @@ class PdoGsb
      */
     public function getInfosMembre($login, $mdp)
     {
+        // On effectue une requête pour aller chercher l'info dans la table membre & aussi rang
         $requetePrepare = PdoGsb::$monPdo->prepare(
             'SELECT membre.id AS id, membre.nom AS nom, '
-            . 'membre.prenom AS prenom '
-            . 'FROM membre '
+            . 'membre.prenom AS prenom, rang.libelle as rang '
+            . 'FROM membre LEFT JOIN rang '
+            . 'ON membre.idrang = rang.id '
             . 'WHERE membre.login = :unLogin '
             . 'AND membre.mdp = :unMdp '
         );
@@ -491,5 +493,24 @@ class PdoGsb
         $requetePrepare->bindParam(':unIdMembre', $idMembre, PDO::PARAM_STR);
         $requetePrepare->bindParam(':unMois', $mois, PDO::PARAM_STR);
         $requetePrepare->execute();
+    }
+
+    /**
+     * Récupère la la liste des membres pour le comptable
+     *
+     * @return array $lesVisiteurs Tableau contenant les infos des visiteurs
+     */
+    public function getListeVisiteurs()
+    {
+        $requetePrepare = PdoGSB::$monPdo->query(
+            'SELECT membre.id AS id, '
+            . 'membre.nom  AS nom, '
+            . 'membre.prenom AS prenom '
+            . 'FROM membre INNER JOIN rang '
+            . 'ON membre.idrang = rang.id '
+            . ' WHERE rang.libelle = "visiteur"'
+        );
+
+        return $requetePrepare->fetchAll();
     }
 }

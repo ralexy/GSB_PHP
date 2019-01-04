@@ -17,7 +17,7 @@
 <div id="accueil">
     <h2>
         <!-- TODO Switcher la vue selon comptable ou visiteur -->
-        Gestion des frais<small> - Visiteur :
+        Gestion des frais<small> - <?php echo $_SESSION['rang']; ?> :
             <?php 
             echo $_SESSION['prenom'] . ' ' . $_SESSION['nom']
             ?></small>

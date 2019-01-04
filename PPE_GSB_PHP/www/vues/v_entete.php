@@ -49,6 +49,8 @@
                                     Accueil
                                 </a>
                             </li>
+
+                            <?php if($_SESSION['rang'] == 'visiteur') { ?>
                             <li <?php if ($uc == 'gererFrais') { ?>class="active"<?php } ?>>
                                 <a href="index.php?uc=gererFrais&action=saisirFrais">
                                     <span class="glyphicon glyphicon-pencil"></span>
@@ -61,6 +63,21 @@
                                     Afficher mes fiches de frais
                                 </a>
                             </li>
+
+                            <?php } elseif($_SESSION['rang'] == 'comptable') { ?>
+                            <li <?php if ($uc == 'validerFrais') { ?>class="active"<?php } ?>>
+                                <a href="index.php?uc=validerFrais&action=consulterFrais">
+                                    <span class="glyphicon glyphicon-ok"></span>
+                                    Valider les fiches de frais
+                                </a>
+                            </li>
+                            <li <?php if ($uc == 'suivreFrais') { ?>class="active"<?php } ?>>
+                                <a href="index.php?uc=suivreFrais&action=selectionnerMois">
+                                    <span class="glyphicon glyphicon-euro"></span>
+                                    Suivre les paiements des fiches de frais
+                                </a>
+                            </li>
+                            <?php } ?>
                             <li 
                             <?php if ($uc == 'deconnexion') { ?>class="active"<?php } ?>>
                                 <a href="index.php?uc=deconnexion&action=demandeDeconnexion">

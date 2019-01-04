@@ -36,7 +36,8 @@ case 'valideConnexion':
         $id = $membre['id'];
         $nom = $membre['nom'];
         $prenom = $membre['prenom'];
-        connecter($id, $nom, $prenom);
+        $rang = $membre['rang'];
+        connecter($id, $nom, $prenom, $rang);
         header('Location: index.php');
     }
     break;
