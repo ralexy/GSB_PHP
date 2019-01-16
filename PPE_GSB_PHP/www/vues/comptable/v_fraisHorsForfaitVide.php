@@ -1,6 +1,6 @@
 <?php
 /**
- * Gestion de l'accueil
+ * Vue Liste des frais hors forfait
  *
  * PHP Version 7
  *
@@ -14,9 +14,9 @@
  * @version   GIT: <6>
  * @link      http://www.reseaucerta.org Contexte « Laboratoire GSB »
  */
-
-if ($estConnecte) {
-    include 'vues/v_accueil.php';
-} else {
-    include 'vues/v_connexion.php';
-}
+?>
+<hr>
+<div class="row">
+    <h2>Fiche de frais vide</h2>
+    <p>Il n'y a pas de fiche de frais pour ce visiteur médical à la période sélectionnée.</p>
+</div>

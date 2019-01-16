@@ -8,9 +8,10 @@
  * @package   GSB
  * @author    Cheri Bibi - Réseau CERTA <contact@reseaucerta.org>
  * @author    José GIL - CNED <jgil@ac-nice.fr>
- * @copyright 2017 Réseau CERTA
+ * @author    Alexy ROUSSEAU <contact@alexy-rousseau.com>
+ * @copyright 2017-2019 Réseau CERTA
  * @license   Réseau CERTA
- * @version   GIT: <0>
+ * @version   GIT: <6>
  * @link      http://www.php.net/manual/fr/book.pdo.php PHP Data Objects sur php.net
  */
 
@@ -30,9 +31,10 @@
  * @package   GSB
  * @author    Cheri Bibi - Réseau CERTA <contact@reseaucerta.org>
  * @author    José GIL <jgil@ac-nice.fr>
- * @copyright 2017 Réseau CERTA
+ * @author    Alexy ROUSSEAU <contact@alexy-rousseau.com>
+ * @copyright 2017-2019 Réseau CERTA
  * @license   Réseau CERTA
- * @version   Release: 1.0
+ * @version   Release: 1.1
  * @link      http://www.php.net/manual/fr/book.pdo.php PHP Data Objects sur php.net
  */
 

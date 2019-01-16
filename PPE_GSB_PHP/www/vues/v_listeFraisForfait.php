@@ -8,9 +8,10 @@
  * @package   GSB
  * @author    Réseau CERTA <contact@reseaucerta.org>
  * @author    José GIL <jgil@ac-nice.fr>
- * @copyright 2017 Réseau CERTA
+ * @author    Alexy ROUSSEAU <contact@alexy-rousseau.com>
+ * @copyright 2017-2019 Réseau CERTA
  * @license   Réseau CERTA
- * @version   GIT: <0>
+ * @version   GIT: <6>
  * @link      http://www.reseaucerta.org Contexte « Laboratoire GSB »
  */
 ?>
