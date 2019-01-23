@@ -29,7 +29,6 @@
                 </tr>
             </thead>
             <tbody>
-            <form method="post" action="#">
                 <?php
                 foreach ($lesFraisHorsForfait as $unFraisHorsForfait) {
                     $libelle = htmlspecialchars($unFraisHorsForfait['libelle']);
@@ -41,14 +40,18 @@
                         <td><input type="text" name="txtLibelleHF" value="<?php echo $libelle ?>" placeholder="Libellé"></td>
                         <td><input type="text" name="txtMontantHF" value="<?php echo $montant ?>" placeholder="Montant"> </td>
                         <td>
-                            <button class="btn btn-success" type="submit">Corriger</button>
-                            <button class="btn btn-danger" type="reset">Réinitialiser</button>
+                            <!-- On passe par des liens stylisés sous forme de boutons parce qu'un formulaire n'est pas valide en HTML dans un tableau -->
+                            <form method="post" action="index.php?uc=validerFrais&action=validerMajFraisHF">
+                                <input type="hidden" name="txtLibelleHF" value="<?php echo $libelle; ?>">
+                                <input type="hidden" name="idLigneHF" value="<?php echo $id; ?>">
+                                <input type="submit" name="valider" value="Valider" class="btn btn-success">
+                                <input type="submit" name="refuser" value="Refuser" class="btn btn-danger">
+                            </form>
                         </td>
                     </tr>
                     <?php
                 }
                 ?>
-            </form>
             </tbody>
         </table>
     </div>
@@ -56,11 +59,11 @@
 
 <div class="row">
     <form method="post" action="#">
-        <label for="txtNbHF">Nombre de justificatifs :</label>
-        <input type="text" name="txtNbHF" size="2">
+        <label for="txtNbHF">Nombre de justificatif(s) :</label>
+        <input type="text" name="txtNbHF" size="2" value="<?php echo count($lesFraisHorsForfait); ?>">
         <div id="form-inline">
-            <button class="btn btn-success" type="submit">Corriger</button>
-            <button class="btn btn-danger" type="reset">Réinitialiser</button>
+            <button class="btn btn-success" type="submit">Valider</button>
+            <button class="btn btn-danger" type="reset">Refuser</button>
         </div>
     </form>
 </div>

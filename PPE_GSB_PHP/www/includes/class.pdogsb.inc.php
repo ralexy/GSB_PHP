@@ -43,7 +43,7 @@ class PdoGsb
     private static $serveur = 'mysql:host=localhost';
     private static $bdd = 'dbname=gsb_frais';
     private static $user = 'root';
-    private static $mdp = '';
+    private static $mdp = 'root';
     private static $monPdo;
     private static $monPdoGsb = null;
 
@@ -392,6 +392,26 @@ class PdoGsb
         $requetePrepare->bindParam(':unLibelle', $libelle, PDO::PARAM_STR);
         $requetePrepare->bindParam(':uneDateFr', $dateFr, PDO::PARAM_STR);
         $requetePrepare->bindParam(':unMontant', $montant, PDO::PARAM_INT);
+        $requetePrepare->execute();
+    }
+
+    /**
+     * Met à jour le frais hors forfait dont l'id et la valeur sont passés en arguments
+     *
+     * @param String $idFrais ID du frais
+     * @param String $libelle Libellé du frais
+     *
+     * @return null
+     */
+    public function majFraisHorsForfait($idFrais, $libelle)
+    {
+        $requetePrepare = PdoGSB::$monPdo->prepare(
+            'UPDATE lignefraishorsforfait '
+            . 'SET libelle = :libelle '
+            . 'WHERE id = :unIdFrais'
+        );
+        $requetePrepare->bindParam(':libelle', $libelle, PDO::PARAM_STR);
+        $requetePrepare->bindParam(':unIdFrais', $idFrais, PDO::PARAM_INT);
         $requetePrepare->execute();
     }
 

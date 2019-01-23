@@ -22,8 +22,9 @@
     <h3>Eléments forfaitisés</h3>
     <div class="col-md-4">
         <form method="post"
-              action="index.php?uc=validerFrais&action=voirFrais"
+              action="index.php?uc=validerFrais&action=validerMajFraisForfait"
               role="form">
+            <input type="hidden" name="idVisiteur" value="<?php echo $idVisiteurSelectionne;?>">
             <fieldset>
                 <?php
                 foreach ($lesFraisForfait as $unFrais) {
