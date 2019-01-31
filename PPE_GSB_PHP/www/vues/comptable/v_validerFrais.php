@@ -21,6 +21,13 @@
     </h2>
     <h3>Eléments forfaitisés</h3>
     <div class="col-md-4">
+        <?php if(isset($success)) { ?>
+            <!-- TODO : S'occuper de l'alerte -->
+            <div class="alert alert-success" role="alert">
+                This is a success alert—check it out!
+            </div>
+        <?php } ?>
+
         <form method="post"
               action="index.php?uc=validerFrais&action=validerMajFraisForfait"
               role="form">

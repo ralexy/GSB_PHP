@@ -25,7 +25,7 @@
                     <th class="date">Date</th>
                     <th class="libelle">Libellé</th>
                     <th class="montant">Montant</th>
-                    <th class="action">&nbsp;</th>
+                    <th class="action">Actions</th>
                 </tr>
             </thead>
             <tbody>
@@ -44,8 +44,12 @@
                             <form method="post" action="index.php?uc=validerFrais&action=validerMajFraisHF">
                                 <input type="hidden" name="txtLibelleHF" value="<?php echo $libelle; ?>">
                                 <input type="hidden" name="idLigneHF" value="<?php echo $id; ?>">
-                                <input type="submit" name="valider" value="Valider" class="btn btn-success">
-                                <input type="submit" name="refuser" value="Refuser" class="btn btn-danger">
+                                <input type="hidden" name="idVisiteur" value="<?php echo $idVisiteurSelectionne; ?>">
+                                <input type="hidden" name="numMois" value="<?php echo $mois; ?>">
+                                <input type="hidden" name="txtMontantHF" value="<?php echo $montant ?>" placeholder="Montant">
+                                <input type="submit" name="action" value="Valider" class="btn btn-success">
+                                <input type="submit" name="action" value="Refuser" class="btn btn-danger">
+                                <input type="submit" name="action" value="Reporter" class="btn btn-info">
                             </form>
                         </td>
                     </tr>
@@ -58,12 +62,14 @@
 </div>
 
 <div class="row">
-    <form method="post" action="#">
+    <form method="post" action="index.php?uc=validerFrais&action=validerFicheFrais">
         <label for="txtNbHF">Nombre de justificatif(s) :</label>
         <input type="text" name="txtNbHF" size="2" value="<?php echo count($lesFraisHorsForfait); ?>">
         <div id="form-inline">
-            <button class="btn btn-success" type="submit">Valider</button>
-            <button class="btn btn-danger" type="reset">Refuser</button>
+            <input type="hidden" name="idVisiteur" value="<?php echo $idVisiteurSelectionne; ?>">
+            <input type="hidden" name="numMois" value="<?php echo $mois; ?>">
+            <input type="submit" name="action" value="Valider" class="btn btn-success">
+            <input type="submit" name="action" value="Refuser" class="btn btn-danger">
         </div>
     </form>
 </div>

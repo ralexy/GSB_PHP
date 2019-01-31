@@ -34,7 +34,7 @@
  * @author    Alexy ROUSSEAU <contact@alexy-rousseau.com>
  * @copyright 2017-2019 Réseau CERTA
  * @license   Réseau CERTA
- * @version   Release: 1.1
+ * @version   GIT: <8>
  * @link      http://www.php.net/manual/fr/book.pdo.php PHP Data Objects sur php.net
  */
 
@@ -246,7 +246,7 @@ class PdoGsb
      * Met à jour le nombre de justificatifs de la table ficheFrais
      * pour le mois et le membre concerné
      *
-     * @param String  $idMembre      ID du membre
+     * @param String  $idMembre        ID du membre
      * @param String  $mois            Mois sous la forme aaaamm
      * @param Integer $nbJustificatifs Nombre de justificatifs
      *
@@ -254,7 +254,7 @@ class PdoGsb
      */
     public function majNbJustificatifs($idMembre, $mois, $nbJustificatifs)
     {
-        $requetePrepare = PdoGB::$monPdo->prepare(
+        $requetePrepare = PdoGSB::$monPdo->prepare(
             'UPDATE fichefrais '
             . 'SET nbjustificatifs = :unNbJustificatifs '
             . 'WHERE fichefrais.idmembre = :unIdMembre '
@@ -325,7 +325,7 @@ class PdoGsb
      * les lignes de frais forfait de quantités nulles
      *
      * @param String $idMembre ID du membre
-     * @param String $mois       Mois sous la forme aaaamm
+     * @param String $mois     Mois sous la forme aaaamm
      *
      * @return null
      */
@@ -491,6 +491,29 @@ class PdoGsb
         $requetePrepare->execute();
         $laLigne = $requetePrepare->fetch();
         return $laLigne;
+    }
+
+    /**
+     * Modifie le montant des frais validés pour un membre
+     *
+     * @param String $idMembre      ID du membre
+     * @param String $mois          Mois sous la forme aaaamm
+     * @param String $montantvalide Le montant à MAJ
+     *
+     * @return null
+     */
+    public function majFraisValideFicheFrais($idMembre, $mois, $montantvalide)
+    {
+      $requetePrepare = PdoGSB::$monPdo->prepare(
+          'UPDATE ficheFrais '
+          . 'SET montantvalide = :montantvalide '
+          . 'WHERE fichefrais.idmembre = :unIdMembre '
+          . 'AND fichefrais.mois = :unMois'
+      );
+      $requetePrepare->bindParam(':montantvalide', $montantvalide, PDO::PARAM_STR);
+      $requetePrepare->bindParam(':unIdMembre', $idMembre, PDO::PARAM_STR);
+      $requetePrepare->bindParam(':unMois', $mois, PDO::PARAM_STR);
+      $requetePrepare->execute();
     }
 
     /**
