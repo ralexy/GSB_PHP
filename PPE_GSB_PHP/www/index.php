@@ -11,7 +11,7 @@
  * @author    Alexy ROUSSEAU <contact@alexy-rousseau.com>
  * @copyright 2017-2019 Réseau CERTA
  * @license   Réseau CERTA
- * @version   GIT: <6>
+ * @version   GIT: <9>
  * @link      http://www.reseaucerta.org Contexte « Laboratoire GSB »
  */
 
@@ -42,7 +42,11 @@ case 'etatFrais':
     break;
 
 case 'validerFrais':
-    include'controleurs/c_validerFrais.php';
+    include 'controleurs/c_validerFrais.php';
+    break;
+
+case 'suivreFrais':
+    include 'controleurs/c_suivreFrais.php';
     break;
 
 case 'deconnexion':

@@ -1,6 +1,6 @@
 <?php
 /**
- * Vue Déconnexion
+ * Vue Liste des frais hors forfait
  *
  * PHP Version 7
  *
@@ -14,11 +14,9 @@
  * @version   GIT: <9>
  * @link      http://www.reseaucerta.org Contexte « Laboratoire GSB »
  */
-deconnecter();
 ?>
-<div class="alert alert-info" role="alert">
-    <p>Vous avez bien été déconnecté ! <a href="index.php">Cliquez ici</a>
-        pour revenir à la page de connexion.</p>
+<hr>
+<div class="row">
+    <h2>Fiche de frais vide</h2>
+    <p>Il n'y a aucune fiche de frais à mettre en paiement ou à rembourser pour le moment</p>
 </div>
-<?php
-header("Refresh: 3;URL=index.php");

@@ -11,7 +11,7 @@
  * @author    Alexy ROUSSEAU <contact@alexy-rousseau.com>
  * @copyright 2017-2019 Réseau CERTA
  * @license   Réseau CERTA
- * @version   GIT: <6>
+ * @version   GIT: <9>
  * @link      http://www.php.net/manual/fr/book.pdo.php PHP Data Objects sur php.net
  */
 
@@ -248,4 +248,22 @@ function nbErreurs()
     } else {
         return count($_REQUEST['erreurs']);
     }
+}
+
+/**
+ * "Nettoie" un libellé de Frais HF en retirant "ACCEPTE :" ou "REFUSE :"
+ * @param String $libelle Libellé à nettoyer
+ * @return String le libellé
+ */
+function nettoieLibelle($libelle)
+{
+    // On supprime les messages possiblement ajoutés au libellé si on le modifie plusieurs fois (évite d'avoir plusieurs fois accepté ou refusé)
+    $msg[0] = 'ACCEPTE : ';
+    $msg[1] = 'REFUSE : ';
+
+    for ($i = 0; $i < 2; $i++) {
+        $libelle = str_replace($msg[$i], '', $libelle, $count);
+    }
+
+    return $libelle;
 }

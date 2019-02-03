@@ -11,7 +11,7 @@
  * @author    Alexy ROUSSEAU <contact@alexy-rousseau.com>
  * @copyright 2017-2019 Réseau CERTA
  * @license   Réseau CERTA
- * @version   GIT: <6>
+ * @version   GIT: <9>
  * @link      http://www.php.net/manual/fr/book.pdo.php PHP Data Objects sur php.net
  */
 
@@ -34,7 +34,7 @@
  * @author    Alexy ROUSSEAU <contact@alexy-rousseau.com>
  * @copyright 2017-2019 Réseau CERTA
  * @license   Réseau CERTA
- * @version   GIT: <8>
+ * @version   GIT: <9>
  * @link      http://www.php.net/manual/fr/book.pdo.php PHP Data Objects sur php.net
  */
 
@@ -240,6 +240,31 @@ class PdoGsb
             $requetePrepare->bindParam(':idFrais', $unIdFrais, PDO::PARAM_STR);
             $requetePrepare->execute();
         }
+    }
+
+    /**
+     * Met à jour la table ligneFraisHorsForfait
+     * Met à jour la table ligneFraisHorsForfait pour un membre et
+     * un mois donné en ajoutant au libellé "ACCEPTE :" ou "REFUSE :"
+     *
+     * @param String $idMembre ID du membre
+     * @param String $mois       Mois sous la forme aaaamm
+     * @return null
+     */
+    public function validerFraisHorsForfait($idMembre, $mois)
+    {
+        $unLibelle = 'ACCEPTE : ';
+
+        $requetePrepare = PdoGSB::$monPdo->prepare(
+            'UPDATE lignefraishorsforfait '
+            . 'SET lignefraishorsforfait.libelle = CONCAT(:unLibelle, lignefraishorsforfait.libelle) '
+            . 'WHERE idmembre = :unIdMembre '
+            . 'AND mois = :unMois'
+        );
+        $requetePrepare->bindParam(':unLibelle', $unLibelle, PDO::PARAM_STR);
+        $requetePrepare->bindParam(':unIdMembre', $idMembre, PDO::PARAM_STR);
+        $requetePrepare->bindParam(':unMois', $mois, PDO::PARAM_STR);
+        $requetePrepare->execute();
     }
 
     /**
@@ -554,6 +579,26 @@ class PdoGsb
             . 'FROM membre INNER JOIN rang '
             . 'ON membre.idrang = rang.id '
             . ' WHERE rang.libelle = "visiteur"'
+        );
+
+        return $requetePrepare->fetchAll();
+    }
+
+    /**
+     * Récupère la liste des fiches de frais à mettre en paiement ou à rembourser
+     * @return array $listeSuiviFrais Tableau associatif à plusieurs dimensions
+     * contenant toutes les fiches et ses infos rattachées
+     */
+    public function getListeFicheFraisValidees()
+    {
+        $requetePrepare = PdoGSB::$monPdo->query(
+            'SELECT fichefrais.mois  AS mois, '
+            . 'membre.id  AS id, '
+            . 'membre.nom  AS nom, '
+            . 'membre.prenom AS prenom '
+            . 'FROM fichefrais JOIN membre '
+            . 'ON fichefrais.idmembre = membre.id '
+            . 'WHERE fichefrais.idetat IN("VA", "PA")'
         );
 
         return $requetePrepare->fetchAll();

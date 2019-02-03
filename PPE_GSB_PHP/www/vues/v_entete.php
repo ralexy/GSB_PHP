@@ -11,7 +11,7 @@
  * @author    Alexy ROUSSEAU <contact@alexy-rousseau.com>
  * @copyright 2017-2019 Réseau CERTA
  * @license   Réseau CERTA
- * @version   GIT: <6>
+ * @version   GIT: <9>
  * @link      http://www.reseaucerta.org Contexte « Laboratoire GSB »
  */
 ?>
@@ -90,6 +90,16 @@
                     </div>
                 </div>
             </div>
+            <?php
+                if(isset($_SESSION['flash'])) {
+                    ?>
+                    <div class="alert alert-info" role="alert">
+                        <p><?php echo $_SESSION['flash']?></p>
+                    </div>
+                    <?php
+                }
+                unset($_SESSION['flash']);
+            ?>
             <?php
             } else {
                 ?>   

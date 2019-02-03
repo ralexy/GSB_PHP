@@ -11,7 +11,7 @@
  * @author    Alexy ROUSSEAU <contact@alexy-rousseau.com>
  * @copyright 2017-2019 Réseau CERTA
  * @license   Réseau CERTA
- * @version   GIT: <6>
+ * @version   GIT: <9>
  * @link      http://www.reseaucerta.org Contexte « Laboratoire GSB »
  */
 ?>
@@ -23,14 +23,18 @@
     <div class="col-md-4">
         <?php if(isset($success)) { ?>
             <!-- TODO : S'occuper de l'alerte -->
-            <div class="alert alert-success" role="alert">
-                This is a success alert—check it out!
+            <div class="alert alert-success" role="alert" data-dismiss="alert">
+                Les modifications ont bien été enregistrées !
+                <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
             </div>
         <?php } ?>
 
         <form method="post"
               action="index.php?uc=validerFrais&action=validerMajFraisForfait"
               role="form">
+            <input type="hidden" name="mois" value="<?php echo $moisASelectionner; ?>">
             <input type="hidden" name="idVisiteur" value="<?php echo $idVisiteurSelectionne;?>">
             <fieldset>
                 <?php
