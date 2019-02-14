@@ -11,7 +11,7 @@
  * @author    Alexy ROUSSEAU <contact@alexy-rousseau.com>
  * @copyright 2017-2019 Réseau CERTA
  * @license   Réseau CERTA
- * @version   GIT: <9>
+ * @version   GIT: <10>
  * @link      http://www.php.net/manual/fr/book.pdo.php PHP Data Objects sur php.net
  */
 
@@ -96,6 +96,21 @@ function getMois($date)
         $mois = '0' . $mois;
     }
     return $annee . $mois;
+}
+
+/**
+ * Retourne le mois en cours en français depuis une chaine aaaamm
+ *
+ * @param String $mois au format  aamm
+ *
+ * @return String Date au format mm/aaaa
+ */
+function getMoisFrancais($date)
+{
+    $mois = substr($date, -2);
+    $annee = substr($date, 0, 4);
+
+    return $mois . '/' . $annee;
 }
 
 /* gestion des erreurs */

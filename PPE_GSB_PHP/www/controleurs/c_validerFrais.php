@@ -11,22 +11,19 @@
  * @author    Alexy ROUSSEAU <contact@alexy-rousseau.com>
  * @copyright 2017-2019 Réseau CERTA
  * @license   Réseau CERTA
- * @version   GIT: <9>
+ * @version   GIT: <10>
  * @link      http://www.reseaucerta.org Contexte « Laboratoire GSB »
  */
 
 $idMembre              = $_SESSION['idMembre'];
 $lesVisiteurs          = $pdo->getListeVisiteurs();
 $action                = filter_input(INPUT_GET, 'action', FILTER_SANITIZE_STRING);
-$moisASelectionner     = filter_input(INPUT_POST, 'lstMois', FILTER_SANITIZE_STRING); // Permet de selectionner dans le select le bon mois
-$idVisiteurSelectionne = filter_input(INPUT_POST, 'lstVisiteurs', FILTER_SANITIZE_STRING);
+$moisASelectionner     = isset($_POST['lstMois']) ? filter_input(INPUT_POST, 'lstMois', FILTER_SANITIZE_STRING) : $_SESSION['moisASelectionner']; // Permet de selectionner dans le select le bon mois
+$idVisiteurSelectionne = isset($_POST['lstVisiteurs']) ? filter_input(INPUT_POST, 'lstVisiteurs', FILTER_SANITIZE_STRING) : $_SESSION['idVisiteurSelectionne'];
+$lesMoisDisponibles    = $pdo->getLesMoisDisponibles(false, 'CL');
 
-// Ajoute les mois du visiteur à ses infos pour leur parcours par le comptable
-for($i = 0; $i < count($lesVisiteurs); $i++) {
-    $lesVisiteurs[$i]['lesMoisDisponibles'] = $pdo->getLesMoisDisponibles($lesVisiteurs[$i]['id']);
-}
-
-require 'vues/comptable/v_listeVisiteurs.php';
+$_SESSION['moisASelectionner'] = $moisASelectionner;
+$_SESSION['idVisiteurSelectionne'] = $idVisiteurSelectionne;
 
 switch ($action) {
 case 'validerSaisieFraisVisiteur';
@@ -49,13 +46,19 @@ case 'validerSaisieFraisVisiteur';
         require 'vues/comptable/v_fraisHorsForfaitVide.php';
     }
     break;
+
 case 'validerMajFraisForfait':
     $mois       = filter_input(INPUT_POST, 'mois', FILTER_DEFAULT, FILTER_SANITIZE_STRING);
     $lesFrais   = filter_input(INPUT_POST, 'lesFrais', FILTER_DEFAULT, FILTER_FORCE_ARRAY);
     $idVisiteur = filter_input(INPUT_POST, 'idVisiteur', FILTER_SANITIZE_STRING);
     $success = true; // Variable permettant d'afficher la popup comme quoi la modification a bien été prise en compte
+
     if (lesQteFraisValides($lesFrais)) {
         $pdo->majFraisForfait($idVisiteur, $mois, $lesFrais);
+        $_SESSION['flash'] = 'Les "frais forfait" ont bien été mis à jour !';
+
+        header('Location: index.php?uc=validerFrais&action=validerSaisieFraisVisiteur');
+
     } else {
         ajouterErreur('Les valeurs des frais doivent être numériques');
         include 'vues/v_erreurs.php';
@@ -87,6 +90,9 @@ case 'validerMajFraisHF':
         if($occRemplacee) {
             $pdo->majFraisValideFicheFrais($idVisiteurSelectionne, $mois, $montantValide);
         }
+
+        $_SESSION['flash'] = 'Le frais HF a bien été refusé.';
+        header('Location: index.php?uc=validerFrais&action=validerSaisieFraisVisiteur');
     }
     elseif($action == 'Reporter') {
 
@@ -109,6 +115,9 @@ case 'validerMajFraisHF':
 
         // On supprime l'ancien frais HF
         $pdo->supprimerFraisHorsForfait($idLigneHF);
+
+        $_SESSION['flash'] = 'La fiche de frais a bien été reportée.';
+        header('Location: index.php?uc=validerFrais&action=validerSaisieFraisVisiteur');
     }
     break;
 
@@ -124,6 +133,7 @@ case 'validerFicheFrais':
      * On MAJ aussi le montant validé des Frais HF
      */
     $lesFraisHF = $pdo->getLesFraisHorsForfait($idVisiteurSelectionne, $mois);
+
     for($i = 0; $i < count($lesFraisHF); $i++) {
         if(!strpos('REFUSE :', $lesFraisHF[$i]['libelle'])) {
             $lesFraisHF[$i]['libelle'] = nettoieLibelle($lesFraisHF[$i]['libelle']);
@@ -141,5 +151,10 @@ case 'validerFicheFrais':
     $pdo->majNbJustificatifs($idVisiteurSelectionne, $mois, $nbJustificatifs);
     $pdo->majFraisValideFicheFrais($idVisiteurSelectionne, $mois, $montantValide);
     $pdo->majEtatFicheFrais($idVisiteurSelectionne, $mois, 'VA'); // VA pour validé
+
+    $_SESSION['flash'] = 'Le fiche de frais a bien été validée.';
+    header('Location: index.php?uc=suivreFrais');
     break;
 }
+
+require 'vues/comptable/v_listeVisiteurs.php';

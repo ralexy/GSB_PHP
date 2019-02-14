@@ -11,16 +11,14 @@
  * @author    Alexy ROUSSEAU <contact@alexy-rousseau.com>
  * @copyright 2017-2019 Réseau CERTA
  * @license   Réseau CERTA
- * @version   GIT: <9>
+ * @version   GIT: <10>
  * @link      http://www.reseaucerta.org Contexte « Laboratoire GSB »
  */
 ?>
-
 <div id="contenu">
     <h2>
         Sélection des fiches de frais
     </h2>
-    <!--<h3>Selectionner la fiche de frais : </h3>-->
     <form action="index.php?uc=suivreFrais"
           method="post" role="form">
         <div class="form-group">
@@ -31,16 +29,16 @@
                     $id = $uneFiche['id'];
                     $nom = $uneFiche['nom'];
                     $prenom = $uneFiche['prenom'];
-                    $mois= $uneFiche['mois'];
-                    if ($id == $ficheASelectionner) {
+                    $mois = $uneFiche['mois'];
+                    if ($id == $idVisiteur && $mois == $idMois) {
                         ?>
-                        <option selected value="<?php echo $id . '-' . $mois  ?>">
-                            <?php echo strtoupper($nom) . ' ' . $prenom . ' - '. $mois?> </option>
+                        <option selected value="<?php echo $id . '-' . $mois;  ?>">
+                            <?php echo strtoupper($nom) . ' ' . $prenom . ' - '. getMoisFrancais($mois); ?> </option>
                         <?php
                     } else {
                         ?>
-                        <option value="<?php echo $id . '-' . $mois ?>">
-                            <?php echo strtoupper($nom) . ' ' . $prenom . ' - '. $mois?> </option>
+                        <option value="<?php echo $id . '-' . $mois; ?>">
+                            <?php echo strtoupper($nom) . ' ' . $prenom . ' - '. getMoisFrancais($mois); ?> </option>
                         <?php
                     }
                 }
@@ -82,7 +80,7 @@
         </div>
         <div class="panel panel-info">
             <div class="panel-heading">Descriptif des éléments hors forfait -
-                <?php echo $nbJustificatifs ?> justificatifs reçus
+                <?php echo $infosFiche['nbJustificatifs'] ?> justificatifs reçus
             </div>
             <table class="table table-bordered table-responsive">
                 <tr>
@@ -106,7 +104,6 @@
             </table>
         </div>
         <form method="post" action="index.php?uc=suivreFrais&action=miseEnPaiementFiche">
-            <input type="hidden" name="lstFiches" value="<?php echo $idVisiteur . '-'. $mois ?>">
             <input type="submit" name="paiement" value="Mettre en paiement" class="btn btn-info">
             <input type="submit" name="remboursement" value="Mettre en remboursement" class="btn btn-success">
         </form>

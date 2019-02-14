@@ -11,7 +11,7 @@
  * @author    Alexy ROUSSEAU <contact@alexy-rousseau.com>
  * @copyright 2017-2019 Réseau CERTA
  * @license   Réseau CERTA
- * @version   GIT: <9>
+ * @version   GIT: <10>
  * @link      http://www.php.net/manual/fr/book.pdo.php PHP Data Objects sur php.net
  */
 
@@ -34,7 +34,7 @@
  * @author    Alexy ROUSSEAU <contact@alexy-rousseau.com>
  * @copyright 2017-2019 Réseau CERTA
  * @license   Réseau CERTA
- * @version   GIT: <9>
+ * @version   GIT: <10>
  * @link      http://www.php.net/manual/fr/book.pdo.php PHP Data Objects sur php.net
  */
 
@@ -168,16 +168,20 @@ class PdoGsb
 
     /**
      * Retourne sous forme d'un tableau associatif toutes les lignes de frais
-     * au forfait concernées par les deux arguments
+     * au forfait concernées par les deux ou trois arguments
      *
      * @param String $idMembre ID du membre
-     * @param String $mois       Mois sous la forme aaaamm
+     * @param String $mois     Mois sous la forme aaaamm
+     * @param String $idEtat   Facultatif : Etat de la fiche
      *
      * @return l'id, le libelle et la quantité sous la forme d'un tableau
      * associatif
      */
-    public function getLesFraisForfait($idMembre, $mois)
+    public function getLesFraisForfait($idMembre, $mois, $idEtat = null)
     {
+        // TODO : DEBUGGUER CETTE METHODE
+        $filtreEtat = ($idEtat) ? 'AND idetat = :unIdetat' : '';
+
         $requetePrepare = PdoGSB::$monPdo->prepare(
             'SELECT fraisforfait.id as idfrais, '
             . 'fraisforfait.libelle as libelle, '
@@ -186,11 +190,15 @@ class PdoGsb
             . 'INNER JOIN fraisforfait '
             . 'ON fraisforfait.id = lignefraisforfait.idfraisforfait '
             . 'WHERE lignefraisforfait.idmembre = :unIdMembre '
+            . $filtreEtat
             . 'AND lignefraisforfait.mois = :unMois '
             . 'ORDER BY lignefraisforfait.idfraisforfait'
         );
         $requetePrepare->bindParam(':unIdMembre', $idMembre, PDO::PARAM_STR);
         $requetePrepare->bindParam(':unMois', $mois, PDO::PARAM_STR);
+        if($filtreEtat) {
+            $requetePrepare->bindParam(':unIdEtat', $filtreEtat, PDO::PARAM_STR);
+        }
         $requetePrepare->execute();
         return $requetePrepare->fetchAll();
     }
@@ -460,22 +468,32 @@ class PdoGsb
     /**
      * Retourne les mois pour lesquel un membre a une fiche de frais
      *
-     * @param String $idMembre ID du membre
+     * @param String $idEtat Etat de la fiche, Clôturée par défaut
      *
      * @return un tableau associatif de clé un mois -aaaamm- et de valeurs
      *         l'année et le mois correspondant
      */
-    public function getLesMoisDisponibles($idMembre)
+    public function getLesMoisDisponibles($idMembre = false, $idEtat = false)
     {
-        $requetePrepare = PdoGSB::$monPdo->prepare(
-            'SELECT fichefrais.mois AS mois FROM fichefrais '
-            . 'WHERE fichefrais.idmembre = :unIdMembre '
-            . 'ORDER BY fichefrais.mois desc'
-        );
-        $requetePrepare->bindParam(':unIdMembre', $idMembre, PDO::PARAM_STR);
-        $requetePrepare->execute();
-        $lesMois = array();
-        while ($laLigne = $requetePrepare->fetch()) {
+        if($idEtat) {
+            $requetePrepare = PdoGSB::$monPdo->prepare(
+                'SELECT DISTINCT fichefrais.mois AS mois FROM fichefrais '
+                . 'WHERE fichefrais.idetat = :unIdEtat '
+                . 'ORDER BY fichefrais.mois DESC'
+            );
+            $requetePrepare->bindParam(':unIdEtat', $idEtat, PDO::PARAM_STR);
+            $requetePrepare->execute();
+        } else {
+            $requetePrepare = PdoGSB::$monPdo->prepare(
+                'SELECT DISTINCT fichefrais.mois AS mois FROM fichefrais '
+                . 'WHERE fichefrais.idMembre = :unIdMembre '
+                . 'ORDER BY fichefrais.mois DESC'
+            );
+            $requetePrepare->bindParam(':unIdMembre', $idMembre, PDO::PARAM_STR);
+            $requetePrepare->execute();
+        }
+
+        foreach($requetePrepare->fetchAll() as $laLigne) {
             $mois = $laLigne['mois'];
             $numAnnee = substr($mois, 0, 4);
             $numMois = substr($mois, 4, 2);
@@ -485,36 +503,58 @@ class PdoGsb
                 'numMois' => $numMois
             );
         }
+
         return $lesMois;
     }
 
     /**
      * Retourne les informations d'une fiche de frais d'un membre pour un
-     * mois donné
+     * mois et un etat (facultatif) donnés
      *
-     * @param String $idMembre ID du membre
+     * @param String $idMembre   ID du membre
      * @param String $mois       Mois sous la forme aaaamm
+     * @param String $idEtat     Etat de la fiche de frais (facultatif)
      *
      * @return un tableau avec des champs de jointure entre une fiche de frais
      *         et la ligne d'état
      */
-    public function getLesInfosFicheFrais($idMembre, $mois)
+    public function getLesInfosFicheFrais($idMembre, $mois, $idEtat = null)
     {
-        $requetePrepare = PdoGSB::$monPdo->prepare(
-            'SELECT fichefrais.idetat as idEtat, '
-            . 'fichefrais.datemodif as dateModif,'
-            . 'fichefrais.nbjustificatifs as nbJustificatifs, '
-            . 'fichefrais.montantvalide as montantValide, '
-            . 'etat.libelle as libEtat '
-            . 'FROM fichefrais '
-            . 'INNER JOIN etat ON fichefrais.idetat = etat.id '
-            . 'WHERE fichefrais.idmembre = :unIdMembre '
-            . 'AND fichefrais.mois = :unMois'
-        );
-        $requetePrepare->bindParam(':unIdMembre', $idMembre, PDO::PARAM_STR);
-        $requetePrepare->bindParam(':unMois', $mois, PDO::PARAM_STR);
-        $requetePrepare->execute();
-        $laLigne = $requetePrepare->fetch();
+        if($idEtat) {
+            $requetePrepare = PdoGSB::$monPdo->prepare(
+                'SELECT fichefrais.idetat as idEtat, '
+                . 'fichefrais.datemodif as dateModif,'
+                . 'fichefrais.nbjustificatifs as nbJustificatifs, '
+                . 'fichefrais.montantvalide as montantValide, '
+                . 'etat.libelle as libEtat '
+                . 'FROM fichefrais '
+                . 'INNER JOIN etat ON fichefrais.idetat = etat.id '
+                . 'WHERE fichefrais.idmembre = :unIdMembre '
+                . 'AND fichefrais.mois = :unMois '
+                . 'AND fichefrais.idetat = :unIdEtat'
+            );
+            $requetePrepare->bindParam(':unIdMembre', $idMembre, PDO::PARAM_STR);
+            $requetePrepare->bindParam(':unMois', $mois, PDO::PARAM_STR);
+            $requetePrepare->bindParam(':unIdEtat', $idEtat, PDO::PARAM_STR);
+            $requetePrepare->execute();
+            $laLigne = $requetePrepare->fetch();
+        } else{
+            $requetePrepare = PdoGSB::$monPdo->prepare(
+                'SELECT fichefrais.idetat as idEtat, '
+                . 'fichefrais.datemodif as dateModif,'
+                . 'fichefrais.nbjustificatifs as nbJustificatifs, '
+                . 'fichefrais.montantvalide as montantValide, '
+                . 'etat.libelle as libEtat '
+                . 'FROM fichefrais '
+                . 'INNER JOIN etat ON fichefrais.idetat = etat.id '
+                . 'WHERE fichefrais.idmembre = :unIdMembre '
+                . 'AND fichefrais.mois = :unMois '
+            );
+            $requetePrepare->bindParam(':unIdMembre', $idMembre, PDO::PARAM_STR);
+            $requetePrepare->bindParam(':unMois', $mois, PDO::PARAM_STR);
+            $requetePrepare->execute();
+            $laLigne = $requetePrepare->fetch();
+        }
         return $laLigne;
     }
 
