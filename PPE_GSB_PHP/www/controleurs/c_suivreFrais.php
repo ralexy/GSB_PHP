@@ -46,21 +46,38 @@ case 'miseEnPaiementFiche':
                 break;
 
                 case 'PA':
-                    $_SESSION['flash'] = 'La fiche de frais est déjà remboursée, elle ne peut donc pas être mise en paiement !';
+                    $_SESSION['flash'] = 'La fiche de frais est déjà payée, elle ne peut donc pas être mise en paiement !';
                 break;
 
-                default:
+                // On ne met en paiement que des fiches validées
+                case 'VA':
                     $pdo->majEtatFicheFrais($idVisiteur, $idMois, 'PA'); // PA pour mise en paiement
                     $_SESSION['flash'] = 'La fiche de frais a bien été mise en paiement';
+                    break;
+
+                default:
+                    $_SESSION['flash'] = 'Erreur : La mise en paiement de la fiche est impossible. Vérifier que le workflow de celle-ci a été respecté.';
                 break;
             }
         } elseif(isset($_POST['remboursement'])) {
-            // Si on a déjà remboursé la fiche on affiche une alerte et on ne modifie pas notre tuple
-            if ($infosFiche['idEtat'] == 'RB') {
-                $_SESSION['flash'] = 'La fiche de frais est déjà remboursée !';
-            } else {
-                $pdo->majEtatFicheFrais($idVisiteur, $idMois, 'RB');// RB pour remboursé
-                $_SESSION['flash'] = 'La fiche de frais a bien été classée comme remboursée.';
+            switch($infosFiche['idEtat']) {
+                case 'VA':
+                    $_SESSION['flash'] = 'La fiche de frais doit être mise en paiement avant d\'être remboursée !';
+                    break;
+
+                case 'RB':
+                    $_SESSION['flash'] = 'La fiche de frais est déjà remboursée !';
+                    break;
+
+                // On ne rembourse que des fiches mises en paiement
+                case 'PA':
+                    $pdo->majEtatFicheFrais($idVisiteur, $idMois, 'RB');// RB pour remboursé
+                    $_SESSION['flash'] = 'La fiche de frais a bien été classée comme remboursée.';
+                    break;
+
+                default:
+                    $_SESSION['flash'] = 'Erreur : La remboursement de la fiche est impossible. Vérifier que le workflow de celle-ci a été respecté.';
+                    break;
             }
         }
         header('Location: index.php?uc=suivreFrais');

@@ -26,135 +26,148 @@ $_SESSION['moisASelectionner'] = $moisASelectionner;
 $_SESSION['idVisiteurSelectionne'] = $idVisiteurSelectionne;
 
 switch ($action) {
-case 'validerSaisieFraisVisiteur';
-    // On récupère l'id du visiteur selectionné dans le <select>
-    $mois     = $moisASelectionner;
-    $numAnnee = substr($mois, 0, 4);
-    $numMois  = substr($mois, 4, 2);
+    case 'validerSaisieFraisVisiteur';
+        require 'vues/comptable/v_listeVisiteurs.php';
 
-    // On fait une recherche de la clé du tableau associatif correspondant à notre visiteur pour le sélectionner dans notre variable $leVisiteur
-    $matchedKey = array_search($idVisiteurSelectionne, array_column($lesVisiteurs, 'id'));
-    $leVisiteur = $lesVisiteurs[$matchedKey];
+        // On n'affiche que les fiches à l'état clôturé
+        if($pdo->getLesInfosFicheFrais($idVisiteurSelectionne, $moisASelectionner, 'CL')) {
+            // On récupère l'id du visiteur selectionné dans le <select>
+            $numAnnee = substr($moisASelectionner, 0, 4);
+            $numMois = substr($moisASelectionner, 4, 2);
 
-    $lesFraisHorsForfait = $pdo->getLesFraisHorsForfait($idVisiteurSelectionne, $mois);
-    $lesFraisForfait = $pdo->getLesFraisForfait($idVisiteurSelectionne, $mois);
+            // On fait une recherche de la clé du tableau associatif correspondant à notre visiteur pour le sélectionner dans notre variable $leVisiteur
+            $matchedKey = array_search($idVisiteurSelectionne, array_column($lesVisiteurs, 'id'));
+            $leVisiteur = $lesVisiteurs[$matchedKey];
 
-    if($lesFraisForfait) {
-        require 'vues/comptable/v_validerFrais.php';
-        require 'vues/comptable/v_descriptifFraisHorsForfait.php';
-    } else {
-        require 'vues/comptable/v_fraisHorsForfaitVide.php';
-    }
-    break;
+            $lesFraisHorsForfait = $pdo->getLesFraisHorsForfait($idVisiteurSelectionne, $mois);
+            $lesFraisForfait = $pdo->getLesFraisForfait($idVisiteurSelectionne, $mois);
 
-case 'validerMajFraisForfait':
-    $mois       = filter_input(INPUT_POST, 'mois', FILTER_DEFAULT, FILTER_SANITIZE_STRING);
-    $lesFrais   = filter_input(INPUT_POST, 'lesFrais', FILTER_DEFAULT, FILTER_FORCE_ARRAY);
-    $idVisiteur = filter_input(INPUT_POST, 'idVisiteur', FILTER_SANITIZE_STRING);
-    $success = true; // Variable permettant d'afficher la popup comme quoi la modification a bien été prise en compte
+            if ($lesFraisForfait) {
+                require 'vues/comptable/v_validerFrais.php';
+                require 'vues/comptable/v_descriptifFraisHorsForfait.php';
+            } else {
+                require 'vues/comptable/v_fraisHorsForfaitVide.php';
+            }
+        } else {
+            require 'vues/comptable/v_fraisHorsForfaitVide.php';
+        }
+        break;
 
-    if (lesQteFraisValides($lesFrais)) {
-        $pdo->majFraisForfait($idVisiteur, $mois, $lesFrais);
-        $_SESSION['flash'] = 'Les "frais forfait" ont bien été mis à jour !';
+    case 'validerMajFraisForfait':
+        $mois = filter_input(INPUT_POST, 'mois', FILTER_DEFAULT, FILTER_SANITIZE_NUMBER_INT);
+        $lesFrais = filter_input(INPUT_POST, 'lesFrais', FILTER_DEFAULT, FILTER_FORCE_ARRAY);
+        $idVisiteur = filter_input(INPUT_POST, 'idVisiteur', FILTER_SANITIZE_STRING);
 
-        header('Location: index.php?uc=validerFrais&action=validerSaisieFraisVisiteur');
+        if (lesQteFraisValides($lesFrais)) {
+            $pdo->majFraisForfait($idVisiteur, $mois, $lesFrais);
+            $_SESSION['flash'] = 'Les "frais forfait" ont bien été mis à jour !';
 
-    } else {
-        ajouterErreur('Les valeurs des frais doivent être numériques');
-        include 'vues/v_erreurs.php';
-    }
-    break;
+            header('Location: index.php?uc=validerFrais&action=validerSaisieFraisVisiteur');
+
+        } else {
+            ajouterErreur('Les valeurs des frais doivent être numériques');
+            include 'vues/v_erreurs.php';
+        }
+        break;
 
     /** Todo
      *  Revoir le fonctionnement de ce "bloc" et de la vue pour faire tout ça plus proprement (sans input hidden et peut être plus intelligemment pour le if else)
      */
-case 'validerMajFraisHF':
-    $idLigneHF             = filter_input(INPUT_POST, 'idLigneHF', FILTER_SANITIZE_STRING);
-    $libelleHF             = filter_input(INPUT_POST, 'txtLibelleHF', FILTER_SANITIZE_STRING);
-    $action                = filter_input(INPUT_POST, 'action', FILTER_SANITIZE_STRING); // On récupère l'action du formulaire (Valider, Refuser ou Reporter)
-    $idVisiteurSelectionne = filter_input(INPUT_POST, 'idVisiteur', FILTER_SANITIZE_STRING);
-    $mois                  = filter_input(INPUT_POST, 'numMois', FILTER_SANITIZE_STRING);
-    $montantValide         = filter_input(INPUT_POST, 'txtMontant', FILTER_SANITIZE_STRING);
-    $montantHF             = filter_input(INPUT_POST, 'txtMontantHF', FILTER_SANITIZE_STRING);
+    case 'validerMajFraisHF':
+        $idLigneHF = filter_input(INPUT_POST, 'idLigneHF', FILTER_SANITIZE_STRING);
+        $libelleHF = filter_input(INPUT_POST, 'txtLibelleHF', FILTER_SANITIZE_STRING);
+        $action = filter_input(INPUT_POST, 'action', FILTER_SANITIZE_STRING); // On récupère l'action du formulaire (Valider ou Refuser)
+        $idVisiteurSelectionne = filter_input(INPUT_POST, 'idVisiteur', FILTER_SANITIZE_STRING);
+        $mois = filter_input(INPUT_POST, 'numMois', FILTER_SANITIZE_STRING);
+        $montantValide = filter_input(INPUT_POST, 'txtMontant', FILTER_SANITIZE_STRING);
+        $montantHF = filter_input(INPUT_POST, 'txtMontantHF', FILTER_SANITIZE_STRING);
 
-    if($action == 'Refuser') {
-        $occRemplacee  = (count($libelleHF) > count(nettoieLibelle($libelleHF))) ? true : false;
-        $montantValide = $montantValide - $montantHF;
-        $libelleHF     = 'REFUSE : ' . nettoieLibelle($libelleHF);
+        if ($action == 'Refuser') {
+            $occRemplacee = (count($libelleHF) > count(nettoieLibelle($libelleHF))) ? true : false;
+            $montantValide = $montantValide - $montantHF;
+            $libelleHF = 'REFUSE : ' . nettoieLibelle($libelleHF);
 
-        $pdo->majFraisHorsForfait($idLigneHF, $libelleHF); // On finit par mettre à jour la ligne si elle a été acceptée ou refusée...
+            $pdo->majFraisHorsForfait($idLigneHF, $libelleHF); // On finit par mettre à jour la ligne si elle a été acceptée ou refusée...
 
-        // Attaquons maintenant le montant validé de la fiche de frais
-        $ficheAmodifier = $pdo->getLesInfosFicheFrais($idVisiteurSelectionne, $mois);
+            // Attaquons maintenant le montant validé de la fiche de frais
+            $ficheAmodifier = $pdo->getLesInfosFicheFrais($idVisiteurSelectionne, $mois);
 
-        if($occRemplacee) {
-            $pdo->majFraisValideFicheFrais($idVisiteurSelectionne, $mois, $montantValide);
+            if ($occRemplacee) {
+                $pdo->majFraisValideFicheFrais($idVisiteurSelectionne, $mois, $montantValide);
+            }
+
+            $_SESSION['flash'] = 'Le frais HF a bien été refusé.';
+            header('Location: index.php?uc=validerFrais&action=validerSaisieFraisVisiteur');
+        } elseif ($action == 'Reporter') {
+
+            /**
+             * On passe par l'objet DateTime pour manipuler la date,
+             * c'est beaucoup plus simple et plus puissant que de jongler avec les méthodes de PHP qui,
+             * au final font la même chose de façon plus verbeuse
+             */
+            $dateMoisSuivant = (new DateTime('first day of this month'))->modify('+1 month')
+                ->format('d/m/Y');
+            $moisSuivant = getMois($dateMoisSuivant); // On finit par utiliser notre méthode getMois pour avoir la date au format souhaité
+
+            // Si la fiche n'existe pas on la crée
+            if (!$pdo->getLesFraisForfait($idVisiteurSelectionne, $moisSuivant)) {
+                $pdo->creeNouvellesLignesFrais($idVisiteurSelectionne, $moisSuivant);
+            }
+
+            // On créé la nouvelle ligne HF
+            $pdo->creeNouveauFraisHorsForfait($idVisiteurSelectionne, $moisSuivant, $libelleHF, $dateMoisSuivant, $montantHF);
+
+            // On supprime l'ancien frais HF
+            $pdo->supprimerFraisHorsForfait($idLigneHF);
+
+            $_SESSION['flash'] = 'La fiche de frais a bien été reportée.';
+            header('Location: index.php?uc=validerFrais&action=validerSaisieFraisVisiteur');
         }
+        break;
 
-        $_SESSION['flash'] = 'Le frais HF a bien été refusé.';
-        header('Location: index.php?uc=validerFrais&action=validerSaisieFraisVisiteur');
-    }
-    elseif($action == 'Reporter') {
+    case 'validerFicheFrais':
+        $idVisiteurSelectionne = filter_input(INPUT_POST, 'idVisiteur', FILTER_SANITIZE_STRING);
+        $mois = filter_input(INPUT_POST, 'numMois', FILTER_SANITIZE_STRING);
+        $nbJustificatifs = filter_input(INPUT_POST, 'txtNbHF', FILTER_SANITIZE_NUMBER_INT);
+        $montantValide = 0;
 
         /**
-         * On passe par l'objet DateTime pour manipuler la date,
-         * c'est beaucoup plus simple et plus puissant que de jongler avec les méthodes de PHP qui,
-         * au final font la même chose de façon plus verbeuse
+         * On commence par nettoyer les frais HF pour éviter de mettre plusieurs fois "ACCEPTE :"
+         * Si le frais a été préalablement "REFUSE : " on ne le prend pas en compte
+         * On MAJ aussi le montant validé des Frais HF
          */
-        $dateMoisSuivant = (new DateTime('first day of this month'))->modify('+1 month')
-                                         ->format('d/m/Y');
-        $moisSuivant = getMois($dateMoisSuivant); // On finit par utiliser notre méthode getMois pour avoir la date au format souhaité
+        $lesFraisHF = $pdo->getLesFraisHorsForfait($idVisiteurSelectionne, $mois);
+        $lesFraisForfait = $pdo->getLesFraisForfait($idVisiteurSelectionne, $mois);
 
-        // Si la fiche n'existe pas on la crée
-        if(!$pdo->getLesFraisForfait($idVisiteurSelectionne, $moisSuivant)) {
-            $pdo->creeNouvellesLignesFrais($idVisiteurSelectionne, $moisSuivant);
+        // On commence par ajouter les frais HF validés au montant à rembourser
+        for ($i = 0; $i < count($lesFraisHF); $i++) {
+            if (strpos($lesFraisHF[$i]['libelle'], 'REFUSE :') === false) {
+                $lesFraisHF[$i]['libelle'] = nettoieLibelle($lesFraisHF[$i]['libelle']);
+                $montantValide += $lesFraisHF[$i]['montant'];
+            }
         }
 
-        // On créé la nouvelle ligne HF
-        $pdo->creeNouveauFraisHorsForfait($idVisiteurSelectionne, $moisSuivant, $libelleHF, $dateMoisSuivant, $montantHF);
-
-        // On supprime l'ancien frais HF
-        $pdo->supprimerFraisHorsForfait($idLigneHF);
-
-        $_SESSION['flash'] = 'La fiche de frais a bien été reportée.';
-        header('Location: index.php?uc=validerFrais&action=validerSaisieFraisVisiteur');
-    }
-    break;
-
-case 'validerFicheFrais':
-    $idVisiteurSelectionne = filter_input(INPUT_POST, 'idVisiteur', FILTER_SANITIZE_STRING);
-    $mois                  = filter_input(INPUT_POST, 'numMois', FILTER_SANITIZE_STRING);
-    $nbJustificatifs       = (int) filter_input(INPUT_POST, 'txtNbHF', FILTER_SANITIZE_STRING);
-    $montantValide         = 0;
-
-    /**
-     * On commence par nettoyer les frais HF pour éviter de mettre plusieurs fois "ACCEPTE :"
-     * Si le frais a été préalablement "REFUSE : " on ne le prend pas en compte
-     * On MAJ aussi le montant validé des Frais HF
-     */
-    $lesFraisHF = $pdo->getLesFraisHorsForfait($idVisiteurSelectionne, $mois);
-
-    for($i = 0; $i < count($lesFraisHF); $i++) {
-        if(!strpos('REFUSE :', $lesFraisHF[$i]['libelle'])) {
-            $lesFraisHF[$i]['libelle'] = nettoieLibelle($lesFraisHF[$i]['libelle']);
-            $montantValide += $lesFraisHF[$i]['montant'];
+        // Et on finit par les frais forfait
+        foreach($lesFraisForfait as $key => $value) {
+            $montantValide += $value['quantite'];
         }
-    }
 
-    /**
-     * 1. On valide les frais HF
-     * 2. On met à jour le nb de frais validés
-     * 3. On met à jour le montant validé de la FDF
-     * 4. On met à jour la fiche en "validée" et sa date de modification
-     */
-    $pdo->validerFraisHorsForfait($idVisiteurSelectionne, $mois);
-    $pdo->majNbJustificatifs($idVisiteurSelectionne, $mois, $nbJustificatifs);
-    $pdo->majFraisValideFicheFrais($idVisiteurSelectionne, $mois, $montantValide);
-    $pdo->majEtatFicheFrais($idVisiteurSelectionne, $mois, 'VA'); // VA pour validé
+        /**
+         * 1. On valide les frais HF
+         * 2. On met à jour le nb de frais validés
+         * 3. On met à jour le montant validé de la FDF
+         * 4. On met à jour la fiche en "validée" et sa date de modification
+         */
+        $pdo->validerFraisHorsForfait($idVisiteurSelectionne, $mois);
+        $pdo->majNbJustificatifs($idVisiteurSelectionne, $mois, $nbJustificatifs);
+        $pdo->majFraisValideFicheFrais($idVisiteurSelectionne, $mois, $montantValide);
+        $pdo->majEtatFicheFrais($idVisiteurSelectionne, $mois, 'VA'); // VA pour validé
 
-    $_SESSION['flash'] = 'Le fiche de frais a bien été validée.';
-    header('Location: index.php?uc=suivreFrais');
-    break;
+        $_SESSION['flash'] = 'Le fiche de frais a bien été validée.';
+        header('Location: index.php?uc=suivreFrais');
+        break;
+
+    default:
+        require 'vues/comptable/v_listeVisiteurs.php';
+        break;
 }
-
-require 'vues/comptable/v_listeVisiteurs.php';

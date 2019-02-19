@@ -20,6 +20,7 @@ require_once 'includes/class.pdogsb.inc.php';
 session_start();
 $pdo = PdoGsb::getPdoGsb();
 $estConnecte = estConnecte();
+$estComptable = ($_SESSION['rang'] == 'comptable') ? true : false;
 require 'vues/v_entete.php';
 $uc = filter_input(INPUT_GET, 'uc', FILTER_SANITIZE_STRING);
 if ($uc && !$estConnecte) {
@@ -42,11 +43,15 @@ case 'etatFrais':
     break;
 
 case 'validerFrais':
-    include 'controleurs/c_validerFrais.php';
+    if($estComptable) {
+        include 'controleurs/c_validerFrais.php';
+    }
     break;
 
 case 'suivreFrais':
-    include 'controleurs/c_suivreFrais.php';
+    if($estComptable) {
+        include 'controleurs/c_suivreFrais.php';
+    }
     break;
 
 case 'deconnexion':

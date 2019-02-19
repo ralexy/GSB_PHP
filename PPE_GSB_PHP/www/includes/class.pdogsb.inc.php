@@ -253,7 +253,7 @@ class PdoGsb
     /**
      * Met à jour la table ligneFraisHorsForfait
      * Met à jour la table ligneFraisHorsForfait pour un membre et
-     * un mois donné en ajoutant au libellé "ACCEPTE :" ou "REFUSE :"
+     * un mois donné en ajoutant au libellé "ACCEPTE :" et en ignorant ceux qui commencent par "REFUSE :"
      *
      * @param String $idMembre ID du membre
      * @param String $mois       Mois sous la forme aaaamm
@@ -261,17 +261,21 @@ class PdoGsb
      */
     public function validerFraisHorsForfait($idMembre, $mois)
     {
-        $unLibelle = 'ACCEPTE : ';
+        $unLibelleAccepte = 'ACCEPTE : ';
+        $unLibelleDejaRefuse = 'REFUSE%';
 
         $requetePrepare = PdoGSB::$monPdo->prepare(
             'UPDATE lignefraishorsforfait '
-            . 'SET lignefraishorsforfait.libelle = CONCAT(:unLibelle, lignefraishorsforfait.libelle) '
+            . 'SET lignefraishorsforfait.libelle = CONCAT(:unLibelleAccepte, lignefraishorsforfait.libelle) '
             . 'WHERE idmembre = :unIdMembre '
-            . 'AND mois = :unMois'
+            . 'AND mois = :unMois '
+            . 'AND lignefraishorsforfait.libelle NOT LIKE :unLibelleRefuse'
+            . 'AND lignefraishorsforfait.libelle NOT LIKE :unLibelleRefuse'
         );
-        $requetePrepare->bindParam(':unLibelle', $unLibelle, PDO::PARAM_STR);
+        $requetePrepare->bindParam(':unLibelleAccepte', $unLibelleAccepte, PDO::PARAM_STR);
         $requetePrepare->bindParam(':unIdMembre', $idMembre, PDO::PARAM_STR);
         $requetePrepare->bindParam(':unMois', $mois, PDO::PARAM_STR);
+        $requetePrepare->bindParam(':unLibelleRefuse', $unLibelleRefuse, PDO::PARAM_STR);
         $requetePrepare->execute();
     }
 
