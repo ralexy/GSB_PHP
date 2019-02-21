@@ -11,7 +11,7 @@
  * @author    Alexy ROUSSEAU <contact@alexy-rousseau.com>
  * @copyright 2017-2019 Réseau CERTA
  * @license   Réseau CERTA
- * @version   GIT: <10>
+ * @version   GIT: <11>
  * @link      http://www.php.net/manual/fr/book.pdo.php PHP Data Objects sur php.net
  */
 
@@ -29,8 +29,9 @@ function estConnecte()
  * Enregistre dans une variable session les infos d'un membre
  *
  * @param String $idMembre ID du membre
- * @param String $nom        Nom du membre
- * @param String $prenom     Prénom du membre
+ * @param String $nom      Nom du membre
+ * @param String $prenom   Prénom du membre
+ * @param String $rang     Le rang du membre (visiteur ou comptable)
  *
  * @return null
  */
@@ -101,7 +102,7 @@ function getMois($date)
 /**
  * Retourne le mois en cours en français depuis une chaine aaaamm
  *
- * @param String $mois au format  aamm
+ * @param String $date au format  aaaamm
  *
  * @return String Date au format mm/aaaa
  */
@@ -267,18 +268,32 @@ function nbErreurs()
 
 /**
  * "Nettoie" un libellé de Frais HF en retirant "ACCEPTE :" ou "REFUSE :"
+ *
  * @param String $libelle Libellé à nettoyer
+ * @param Int $length la taille maximale de la chaîne à "nettoyer" (100 caractères par défaut)
+ *
  * @return String le libellé
  */
-function nettoieLibelle($libelle)
+function nettoieLibelle($libelle, $length = 100)
 {
-    // On supprime les messages possiblement ajoutés au libellé si on le modifie plusieurs fois (évite d'avoir plusieurs fois accepté ou refusé)
+    /**
+     * On supprime les messages possiblement ajoutés au libellé si on le modifie plusieurs fois (évite d'avoir plusieurs fois accepté ou refusé)
+     */
     $msg[0] = 'ACCEPTE : ';
     $msg[1] = 'REFUSE : ';
 
-    for ($i = 0; $i < 2; $i++) {
-        $libelle = str_replace($msg[$i], '', $libelle, $count);
+    // Si on trouve "ACCEPTE : " ou "REFUSE :" dans notre libellé on les supprime
+    while(strpos($libelle, $msg[0]) !== false || strpos($libelle, $msg[1]) !== false)
+    {
+        $libelle = str_replace($msg[0], '', $libelle);
+        $libelle = str_replace($msg[1], '', $libelle);
     }
+
+    /**
+    * On tronque la chaîne si elle dépasse les $length caractères (comme demandé en sur la fiche descriptive)
+    * $length -5 pour prendre en compte "(...)" qui fait 5 caractères
+    */
+    $libelle = (strlen($libelle) < $length) ? $libelle : substr($libelle, 0, $length - 5). '(...)';
 
     return $libelle;
 }

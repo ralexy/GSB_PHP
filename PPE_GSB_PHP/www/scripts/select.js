@@ -10,6 +10,3 @@ lstMois.addEventListener("change", function() {
 });
 
 function submitForm() { document.getElementById("formChoixVisiteur").submit(); }
-
-// Todo Autohide alerts
-//$('.alert').alert();

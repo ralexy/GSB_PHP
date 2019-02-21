@@ -1,6 +1,6 @@
 <?php
 /**
- * Vue Liste des mois
+ * Vue Liste des visiteurs & mois disponibles
  *
  * PHP Version 7
  *
@@ -11,7 +11,7 @@
  * @author    Alexy ROUSSEAU <contact@alexy-rousseau.com>
  * @copyright 2017-2019 Réseau CERTA
  * @license   Réseau CERTA
- * @version   GIT: <10>
+ * @version   GIT: <11>
  * @link      http://www.reseaucerta.org Contexte « Laboratoire GSB »
  */
 ?>
@@ -29,7 +29,7 @@
                             $nom = $leVisiteur['nom'];
                             $prenom = $leVisiteur['prenom'];
 
-                            if($id == $idVisiteurSelectionne) {
+                            if($id == $idVisiteur) {
                                 ?>
                                 <option selected="selected" value="<?php echo $id ?>">
                                     <?php echo strtoupper($nom) . ' ' . $prenom ?> </option>
@@ -54,7 +54,7 @@
                             $mois = $unMois['mois'];
                             $numAnnee = $unMois['numAnnee'];
                             $numMois = $unMois['numMois'];
-                            if ($mois == $moisASelectionner) {
+                            if ($mois == $moisChoisi) {
                                 ?>
                                 <option selected="selected" value="<?php echo $mois ?>">
                                     <?php echo $numMois . '/' . $numAnnee ?> </option>
@@ -68,8 +68,6 @@
                         }
                         ?>
                     </select>
-                    <!--<input id="ok" type="submit" value="Valider" class="btn btn-success"
-                           role="button">-->
                 </div>
         </div>
     </form>

@@ -1,6 +1,6 @@
 <?php
 /**
- * Vue Liste des frais au forfait
+ * Vue Validation des frais
  *
  * PHP Version 7
  *
@@ -11,7 +11,7 @@
  * @author    Alexy ROUSSEAU <contact@alexy-rousseau.com>
  * @copyright 2017-2019 Réseau CERTA
  * @license   Réseau CERTA
- * @version   GIT: <10>
+ * @version   GIT: <11>
  * @link      http://www.reseaucerta.org Contexte « Laboratoire GSB »
  */
 ?>
@@ -34,8 +34,6 @@
         <form method="post"
               action="index.php?uc=validerFrais&action=validerMajFraisForfait"
               role="form">
-            <input type="hidden" name="mois" value="<?php echo $moisASelectionner; ?>">
-            <input type="hidden" name="idVisiteur" value="<?php echo $idVisiteurSelectionne;?>">
             <fieldset>
                 <?php
                 foreach ($lesFraisForfait as $unFrais) {

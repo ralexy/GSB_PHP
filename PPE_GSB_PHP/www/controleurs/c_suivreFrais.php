@@ -11,12 +11,12 @@
  * @author    Alexy ROUSSEAU <contact@alexy-rousseau.com>
  * @copyright 2017-2019 Réseau CERTA
  * @license   Réseau CERTA
- * @version   GIT: <10>
+ * @version   GIT: <11>
  * @link      http://www.reseaucerta.org Contexte « Laboratoire GSB »
  */
 
-$lesFiches = $pdo->getListeFicheFraisValidees();
-$ficheChoisie = isset($_POST['lstFiches']) ? filter_input(INPUT_POST, 'lstFiches', FILTER_SANITIZE_STRING) : $_SESSION['ficheChoisie'];
+$lesFiches                = $pdo->getListeFicheFraisValidees();
+$ficheChoisie             = isset($_POST['lstFiches']) ? filter_input(INPUT_POST, 'lstFiches', FILTER_SANITIZE_STRING) : $_SESSION['ficheChoisie'];
 $_SESSION['ficheChoisie'] = $ficheChoisie;
 
 if(isset($ficheChoisie)) {
