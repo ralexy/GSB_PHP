@@ -14,6 +14,8 @@
  * @version   GIT: <11>
  * @link      http://www.reseaucerta.org Contexte « Laboratoire GSB »
  */
+
+namespace gsb;
 ?>
 <!DOCTYPE html>
 <html>

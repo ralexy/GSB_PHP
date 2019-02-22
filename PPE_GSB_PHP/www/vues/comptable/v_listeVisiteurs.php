@@ -14,6 +14,8 @@
  * @version   GIT: <11>
  * @link      http://www.reseaucerta.org Contexte « Laboratoire GSB »
  */
+
+namespace gsb;
 ?>
 <div class="row">
     <form action="index.php?uc=validerFrais&action=validerSaisieFraisVisiteur"

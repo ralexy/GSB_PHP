@@ -31,9 +31,6 @@ switch ($action) {
     case 'validerSaisieFraisVisiteur';
         require 'vues/comptable/v_listeVisiteurs.php';
 
-        var_dump($idVisiteur);
-        var_dump($moisChoisi);
-
         // On n'affiche que les fiches à l'état clôturé
         if($pdo->getLesInfosFicheFrais($idVisiteur, $moisChoisi, 'CL')) {
             // On fait une recherche de la clé du tableau associatif correspondant à notre visiteur pour le sélectionner dans notre variable $leVisiteur
@@ -143,10 +140,6 @@ switch ($action) {
         foreach($lesFraisForfait as $key => $value) {
             $montantValide += $value['quantite'];
         }
-
-        var_dump($montantValide);
-        var_dump($idVisiteur);
-        var_dump($moisChoisi);
 
         /**
          * 1. On valide les frais HF
