@@ -27,6 +27,7 @@ case 'demandeConnexion':
 case 'valideConnexion':
     $login = filter_input(INPUT_POST, 'login', FILTER_SANITIZE_STRING);
     $mdp = filter_input(INPUT_POST, 'mdp', FILTER_SANITIZE_STRING);
+
     $membre = $pdo->getInfosMembre($login, $mdp);
 
     if (!is_array($membre)) {

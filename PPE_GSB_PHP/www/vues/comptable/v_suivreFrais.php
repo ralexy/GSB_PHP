@@ -109,6 +109,10 @@ namespace gsb;
             <input type="submit" name="paiement" value="Mettre en paiement" class="btn btn-info">
             <input type="submit" name="remboursement" value="Mettre en remboursement" class="btn btn-success">
         </form>
+
+        <form method="post" action="index.php?uc=suivreFrais&action=export">
+            <input type="submit" name="export" value="Exporter au format PDF" class="btn">
+        </form>
         <?php
     }
     ?>

@@ -90,6 +90,14 @@ case'selectionnerMois':
         header('Location: index.php?uc=suivreFrais&action=selectionnerMois');
     }
 break;
+
+case 'export':
+    var_dump($infosFiche);
+    var_dump($lesFraisForfait);
+    var_dump($lesFraisHorsForfait);
+    var_dump($lesFiches);
+    require 'vues/comptable/v_ficheFraisPdf.php';
+break;
 }
 if($lesFiches) {
     require 'vues/comptable/v_suivreFrais.php';

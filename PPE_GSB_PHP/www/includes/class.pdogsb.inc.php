@@ -46,6 +46,7 @@ class PdoGsb
     private static $mdp = 'root';
     private static $monPdo;
     private static $monPdoGsb = null;
+    private static $cost = 12; // Nb d'itérations pour le chiffrement du MDP, plus on en a plus c'est sécurisé (et plus ça demande de ressources)
 
     /**
      * Constructeur privé, crée l'instance de PDO qui sera sollicitée
@@ -60,9 +61,24 @@ class PdoGsb
                 PdoGsb::$mdp
             );
             PdoGsb::$monPdo->query('SET CHARACTER SET utf8');
+
+            /**
+             * Appel de cette méthode uniquement une fois pour chiffrer les mdp en clair
+             */
+            //$this->securiseMotsDePasse();
         } catch(Exception $e) {
             die('Erreur : '. $e->getMessage());
         }
+    }
+
+    /**
+     * Getter permettant de récupérer la valeur cost pour l'algorithme de chiffrement BCRYPT
+     * Ainsi on a qu'à modifier la variable $cost dans cette classe pour renforcer ou affaiblir le nombre
+     * de passes de l'algorithme
+     * @return int
+     */
+    public function getCost() {
+        return self::$cost;
     }
 
     /**
@@ -100,18 +116,25 @@ class PdoGsb
     {
         // On effectue une requête pour aller chercher l'info dans la table membre & aussi rang
         $requetePrepare = PdoGsb::$monPdo->prepare(
-            'SELECT membre.id AS id, membre.nom AS nom, '
+            'SELECT membre.id AS id, membre.nom AS nom, membre.mdp as mdp, '
             . 'membre.prenom AS prenom, rang.libelle as rang '
             . 'FROM membre LEFT JOIN rang '
             . 'ON membre.idrang = rang.id '
-            . 'WHERE membre.login = :unLogin '
-            . 'AND membre.mdp = :unMdp '
+            . 'WHERE membre.login = :unLogin'
         );
         $requetePrepare->bindParam(':unLogin', $login, PDO::PARAM_STR);
-        $requetePrepare->bindParam(':unMdp', $mdp, PDO::PARAM_STR);
         $requetePrepare->execute();
+        $donnees = $requetePrepare->fetch();
 
-        return $requetePrepare->fetch();
+        /**
+         * Condition permettant de vérifier que le mdp saisi correspond bien au mdp stocké chiffré en DB
+         */
+        if(password_verify($mdp, $donnees['mdp'])) {
+            unset($donnees['mdp']); // On supprime cette information du tableau par sécurité
+            return $donnees;
+        }
+
+        return false;
     }
 
     /**
@@ -623,5 +646,40 @@ class PdoGsb
         );
 
         return $requetePrepare->fetchAll();
+    }
+
+    /**
+     * Méthode permettant d'encrypter les mots de passe via BCRYPT dans la DB
+     * On gardera une colonne "oldmdp" uniquement à des fins pédagogiques
+     * En contexte réel aucun mdp ne sera sauvegardé en clair dans la DB
+     *
+     * @return null
+     */
+    public function securiseMotsDePasse() {
+        /**
+         * On désactive le processus d'arrêt de programme trop long
+         * Le chiffrement étant justement très vorace en ressources il prend du temps
+         */
+        ini_set('max_execution_time', 0);
+
+        $q1 = PDOGsb::$monPdo->query('SELECT * FROM membre');
+        $data = $q1->fetchAll();
+        foreach($data as $ligne) {
+            $q2 = PDOGsb::$monPdo->prepare('UPDATE membre SET mdp = :unMdp WHERE id = :unId');
+
+            /**
+             * Chiffrement du mdp via l'algorithme Bcrypt
+             * Cost = nb d'itérations (pourra se
+             */
+            $mdpSecurise = password_hash($ligne['ancienmdp'], PASSWORD_BCRYPT, ['cost' => PDOGsb::$cost]);
+
+            $q2->bindParam(':unMdp', $mdpSecurise);
+            $q2->bindParam(':unId', $ligne['id']);
+
+            $q2->execute();
+
+            $q1->closeCursor();
+            $q2->closeCursor();
+        }
     }
 }
