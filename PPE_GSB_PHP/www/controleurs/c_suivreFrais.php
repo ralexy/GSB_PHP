@@ -92,11 +92,12 @@ case'selectionnerMois':
 break;
 
 case 'export':
-    var_dump($infosFiche);
+    /*var_dump($infosFiche);
     var_dump($lesFraisForfait);
     var_dump($lesFraisHorsForfait);
-    var_dump($lesFiches);
+    var_dump($lesFiches);*/
     require 'vues/comptable/v_ficheFraisPdf.php';
+    exit;
 break;
 }
 if($lesFiches) {
