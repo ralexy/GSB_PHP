@@ -11,9 +11,15 @@
  * @author    Alexy ROUSSEAU <contact@alexy-rousseau.com>
  * @copyright 2017-2019 Réseau CERTA
  * @license   Réseau CERTA
- * @version   GIT: <12>
+ * @version   GIT: <13>
  * @link      http://www.reseaucerta.org Contexte « Laboratoire GSB »
  */
+
+// On créé nos variable de session si elles n'existent pas
+if(empty($_SESSION['moisChoisi']) || empty($_SESSION['idVisiteurChoisi'])) {
+    $_SESSION['moisChoisi'] = '';
+    $_SESSION['idVisiteurChoisi'] = '';
+}
 
 $idMembre              = $_SESSION['idMembre'];
 $lesVisiteurs          = $pdo->getListeVisiteurs();
@@ -23,8 +29,10 @@ $idVisiteur            = isset($_POST['lstVisiteurs']) ? filter_input(INPUT_POST
 $lesMoisDisponibles    = $pdo->getLesMoisDisponibles(false, 'CL');
 $mois                  = substr($moisChoisi, 0, 4);
 $annee                 = substr($moisChoisi, 4, 2);
+$lesVehicules          = $pdo->getLesVehicules();
+$infosFicheFrais       = $pdo->getLesInfosFicheFrais($idVisiteur, $moisChoisi);
 
-$_SESSION['moisChoisi']     = $moisChoisi;
+$_SESSION['moisChoisi']       = $moisChoisi;
 $_SESSION['idVisiteurChoisi'] = $idVisiteur;
 
 switch ($action) {
@@ -37,8 +45,8 @@ switch ($action) {
             $matchedKey = array_search($idVisiteur, array_column($lesVisiteurs, 'id'));
             $leVisiteur = $lesVisiteurs[$matchedKey];
 
-            $lesFraisHorsForfait = $pdo->getLesFraisHorsForfait($idVisiteur, $mois);
-            $lesFraisForfait = $pdo->getLesFraisForfait($idVisiteur, $mois);
+            $lesFraisHorsForfait = $pdo->getLesFraisHorsForfait($idVisiteur, $moisChoisi);
+            $lesFraisForfait = $pdo->getLesFraisForfait($idVisiteur, $moisChoisi);
 
             if ($lesFraisForfait) {
                 require 'vues/comptable/v_validerFrais.php';
@@ -56,6 +64,7 @@ switch ($action) {
 
         if(lesQteFraisValides($lesFrais)) {
             $pdo->majFraisForfait($idVisiteur, $moisChoisi, $lesFrais);
+            $pdo->majVehicule($idVisiteur, $moisChoisi, $lesFrais['VEH']);
             $_SESSION['flash'] = 'Les "frais forfait" ont bien été mis à jour !';
 
             header('Location: index.php?uc=validerFrais&action=validerSaisieFraisVisiteur');
@@ -69,14 +78,14 @@ switch ($action) {
     case 'validerMajFraisHF':
         $idLigneHF     = filter_input(INPUT_POST, 'idLigneHF', FILTER_SANITIZE_STRING);
         $libelleHF     = filter_input(INPUT_POST, 'txtLibelleHF', FILTER_SANITIZE_STRING);
-        $action        = filter_input(INPUT_POST, 'action', FILTER_SANITIZE_STRING); // On récupère l'action du formulaire (Valider ou Refuser)
+        $formAction    = filter_input(INPUT_POST, 'action', FILTER_SANITIZE_STRING); // On récupère l'action du formulaire (Valider ou Refuser)
         $montantValide = filter_input(INPUT_POST, 'txtMontant', FILTER_SANITIZE_STRING);
         $montantHF     = filter_input(INPUT_POST, 'txtMontantHF', FILTER_SANITIZE_STRING);
 
-        if ($action == 'Refuser') {
+        if ($formAction == 'Refuser') {
             $occRemplacee = (count($libelleHF) > count(nettoieLibelle($libelleHF))) ? true : false;
             $montantValide = $montantValide - $montantHF;
-            $libelleHF = 'REFUSE : ' . nettoieLibelle($libelleHF, 89);
+            $libelleHF = LABEL_REFUSE . nettoieLibelle($libelleHF, 89);
 
             $pdo->majFraisHorsForfait($idLigneHF, $libelleHF); // On finit par mettre à jour la ligne si elle a été acceptée ou refusée...
 
@@ -89,8 +98,7 @@ switch ($action) {
             }
 
             $_SESSION['flash'] = 'Le frais HF a bien été refusé.';
-            //header('Location: index.php?uc=validerFrais&action=validerSaisieFraisVisiteur');
-        } elseif ($action == 'Reporter') {
+        } elseif ($formAction == 'Reporter') {
             /**
              * On passe par l'objet DateTime pour manipuler la date,
              * c'est beaucoup plus simple et plus puissant que de jongler avec les méthodes de PHP qui,
@@ -112,8 +120,8 @@ switch ($action) {
             $pdo->supprimerFraisHorsForfait($idLigneHF);
 
             $_SESSION['flash'] = 'La fiche de frais a bien été reportée.';
-            header('Location: index.php?uc=validerFrais&action=validerSaisieFraisVisiteur');
         }
+        header('Location: index.php?uc=validerFrais&action=validerSaisieFraisVisiteur');
         break;
 
     case 'validerFicheFrais':
@@ -127,18 +135,27 @@ switch ($action) {
          */
         $lesFraisHF = $pdo->getLesFraisHorsForfait($idVisiteur, $moisChoisi);
         $lesFraisForfait = $pdo->getLesFraisForfait($idVisiteur, $moisChoisi);
+        $infosFicheFrais = $pdo->getLesInfosFicheFrais($idVisiteur, $moisChoisi);
 
         // On commence par ajouter les frais HF validés au montant à rembourser
         for ($i = 0; $i < count($lesFraisHF); $i++) {
-            if (strpos($lesFraisHF[$i]['libelle'], 'REFUSE :') === false) {
+            if (strpos($lesFraisHF[$i]['libelle'], LABEL_REFUSE) === false) {
                 $lesFraisHF[$i]['libelle'] = nettoieLibelle($lesFraisHF[$i]['libelle']);
                 $montantValide += $lesFraisHF[$i]['montant'];
             }
         }
 
-        // Et on finit par les frais forfait
+        /**
+         * Et on finit par les frais forfait
+         * On multiplie la quantité de frais par le montant fixé en DB
+         */
         foreach($lesFraisForfait as $key => $value) {
-            $montantValide += $value['quantite'];
+            $montantValide += $value['quantite'] * $value['montant'];
+
+            // Particularité de l'indemnité KM gérée différemment (en fct du type de véhicule)
+            if($value['idfrais'] == 'KM' && $value['quantite'] > 0) {
+                $montantValide += $value['quantite'] * $infosFicheFrais['indemnitekm'];
+            }
         }
 
         /**

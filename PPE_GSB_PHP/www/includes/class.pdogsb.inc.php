@@ -11,7 +11,7 @@
  * @author    Alexy ROUSSEAU <contact@alexy-rousseau.com>
  * @copyright 2017-2019 Réseau CERTA
  * @license   Réseau CERTA
- * @version   GIT: <12>
+ * @version   GIT: <13>
  * @link      http://www.php.net/manual/fr/book.pdo.php PHP Data Objects sur php.net
  */
 
@@ -34,7 +34,7 @@
  * @author    Alexy ROUSSEAU <contact@alexy-rousseau.com>
  * @copyright 2017-2019 Réseau CERTA
  * @license   Réseau CERTA
- * @version   GIT: <12>
+ * @version   GIT: <13>
  * @link      http://www.php.net/manual/fr/book.pdo.php PHP Data Objects sur php.net
  */
 
@@ -160,7 +160,7 @@ class PdoGsb
         $requetePrepare->bindParam(':unMois', $mois, PDO::PARAM_STR);
         $requetePrepare->execute();
         $lesLignes = $requetePrepare->fetchAll();
-        for ($i = 0; $i < count($lesLignes); $i++) {
+        for ($i = 0, $iMax = count($lesLignes); $i < $iMax; $i++) {
             $date = $lesLignes[$i]['date'];
             $lesLignes[$i]['date'] = dateAnglaisVersFrancais($date);
         }
@@ -204,6 +204,7 @@ class PdoGsb
         $requetePrepare = PdoGSB::$monPdo->prepare(
             'SELECT fraisforfait.id as idfrais, '
             . 'fraisforfait.libelle as libelle, '
+            . 'fraisforfait.montant as montant, '
             . 'lignefraisforfait.quantite as quantite '
             . 'FROM lignefraisforfait '
             . 'INNER JOIN fraisforfait '
@@ -229,6 +230,22 @@ class PdoGsb
             'SELECT fraisforfait.id as idfrais '
             . 'FROM fraisforfait ORDER BY fraisforfait.id'
         );
+        $requetePrepare->execute();
+        return $requetePrepare->fetchAll();
+    }
+
+    /**
+     * Retourne tous les véhicules avec leur indemnité kilométrique
+     *
+     * @return un tableau associatif
+     */
+    public function getLesVehicules()
+    {
+        $requetePrepare = PdoGsb::$monPdo->prepare(
+            'SELECT vehicule.id as id, vehicule.nom as nom, vehicule.indemnitekm as indemnitekm '
+            . 'FROM vehicule ORDER BY vehicule.id'
+        );
+
         $requetePrepare->execute();
         return $requetePrepare->fetchAll();
     }
@@ -266,12 +283,39 @@ class PdoGsb
     }
 
     /**
+     * Met à jour la table fichefrais en lui ajoutant l'id du véhicule sélectionné dans la table vehicule
+     *
+     * @param $idMembre
+     * @param $mois
+     * @param $idVehicule
+     *
+     *
+     * @return null
+     */
+    public function majVehicule($idMembre, $mois, $idVehicule)
+    {
+        $requetePrepare = PdoGsb::$monPdo->prepare(
+            'UPDATE fichefrais '
+            . 'SET fichefrais.idvehicule = :unIdVehicule '
+            . 'WHERE fichefrais.idmembre = :unIdMembre '
+            . 'AND fichefrais.mois = :unMois'
+        );
+
+        $requetePrepare->bindParam(':unIdVehicule', $idVehicule, PDO::PARAM_INT);
+        $requetePrepare->bindParam(':unIdMembre', $idMembre, PDO::PARAM_STR);
+        $requetePrepare->bindParam(':unMois', $mois, PDO::PARAM_STR);
+        $requetePrepare->execute();
+    }
+
+    /**
      * Met à jour la table ligneFraisHorsForfait
      * Met à jour la table ligneFraisHorsForfait pour un membre et
      * un mois donné en ajoutant au libellé "ACCEPTE :" et en ignorant ceux qui commencent par "REFUSE :"
      *
      * @param String $idMembre ID du membre
      * @param String $mois       Mois sous la forme aaaamm
+     *
+     *
      * @return null
      */
     public function validerFraisHorsForfait($idMembre, $mois)
@@ -541,12 +585,19 @@ class PdoGsb
     public function getLesInfosFicheFrais($idMembre, $mois, $idEtat = null)
     {
         $rawSql = 'SELECT fichefrais.idetat as idEtat, '
-            . 'fichefrais.datemodif as dateModif,'
+            . 'fichefrais.datemodif as dateModif, '
             . 'fichefrais.nbjustificatifs as nbJustificatifs, '
             . 'fichefrais.montantvalide as montantValide, '
-            . 'etat.libelle as libEtat '
+            . 'fichefrais.mois as mois, '
+            . 'fichefrais.idvehicule as idvehicule, '
+            . 'etat.libelle as libEtat, '
+            . 'membre.nom as nom, '
+            . 'membre.prenom as prenom, '
+            . 'vehicule.indemnitekm as indemnitekm '
             . 'FROM fichefrais '
             . 'INNER JOIN etat ON fichefrais.idetat = etat.id '
+            . 'INNER JOIN membre ON fichefrais.idmembre = membre.id '
+            . 'INNER JOIN vehicule ON fichefrais.idvehicule = vehicule.id '
             . 'WHERE fichefrais.idmembre = :unIdMembre '
             . 'AND fichefrais.mois = :unMois';
 
@@ -669,7 +720,7 @@ class PdoGsb
 
             /**
              * Chiffrement du mdp via l'algorithme Bcrypt
-             * Cost = nb d'itérations (pourra se
+             * Cost = nb d'itérations (pourra être modifié au fur et à mesure de l'évolution des ressources du serveur)
              */
             $mdpSecurise = password_hash($ligne['ancienmdp'], PASSWORD_BCRYPT, ['cost' => PDOGsb::$cost]);
 

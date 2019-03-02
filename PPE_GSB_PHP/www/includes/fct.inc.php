@@ -11,9 +11,14 @@
  * @author    Alexy ROUSSEAU <contact@alexy-rousseau.com>
  * @copyright 2017-2019 Réseau CERTA
  * @license   Réseau CERTA
- * @version   GIT: <12>
+ * @version   GIT: <13>
  * @link      http://www.php.net/manual/fr/book.pdo.php PHP Data Objects sur php.net
  */
+
+/**
+ * Définition de variables & constantes
+ */
+const LABEL_REFUSE = 'REFUSE : ';
 
 /**
  * Teste si un quelconque membre est connecté
@@ -267,7 +272,7 @@ function nbErreurs()
 }
 
 /**
- * "Nettoie" un libellé de Frais HF en retirant "ACCEPTE :" ou "REFUSE :"
+ * "Nettoie" un libellé de Frais HF en retirant "REFUSE :"
  *
  * @param String $libelle Libellé à nettoyer
  * @param Int $length la taille maximale de la chaîne à "nettoyer" (100 caractères par défaut)
@@ -276,17 +281,10 @@ function nbErreurs()
  */
 function nettoieLibelle($libelle, $length = 100)
 {
-    /**
-     * On supprime les messages possiblement ajoutés au libellé si on le modifie plusieurs fois (évite d'avoir plusieurs fois accepté ou refusé)
-     */
-    $msg[0] = 'ACCEPTE : ';
-    $msg[1] = 'REFUSE : ';
-
-    // Si on trouve "ACCEPTE : " ou "REFUSE :" dans notre libellé on les supprime
-    while(strpos($libelle, $msg[0]) !== false || strpos($libelle, $msg[1]) !== false)
+    // Tant qu'on trouve "REFUSE : " dans notre libellé on supprime l'occurence
+    while(strpos($libelle, LABEL_REFUSE) !== false)
     {
-        $libelle = str_replace($msg[0], '', $libelle);
-        $libelle = str_replace($msg[1], '', $libelle);
+        $libelle = str_replace(LABEL_REFUSE, '', $libelle);
     }
 
     /**

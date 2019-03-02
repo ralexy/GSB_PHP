@@ -11,9 +11,11 @@
  * @author    Alexy ROUSSEAU <contact@alexy-rousseau.com>
  * @copyright 2017-2019 Réseau CERTA
  * @license   Réseau CERTA
- * @version   GIT: <12>
+ * @version   GIT: <13>
  * @link      http://www.reseaucerta.org Contexte « Laboratoire GSB »
  */
+
+ob_start(); // Utile si on veut nettoyer le contenu de l'output, notamment pour la génération de PDF
 
 require_once 'includes/fct.inc.php';
 require_once 'includes/class.pdogsb.inc.php';

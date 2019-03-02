@@ -11,30 +11,17 @@
  * @author    Alexy ROUSSEAU <contact@alexy-rousseau.com>
  * @copyright 2017-2019 Réseau CERTA
  * @license   Réseau CERTA
- * @version   GIT: <12>
+ * @version   GIT: <13>
  * @link      http://www.reseaucerta.org Contexte « Laboratoire GSB »
  */
 
 namespace gsb;
 ?>
 <div class="row">
-    <h2>Valider la fiche de frais
-        <?php echo $numMois . '-' . $numAnnee ?>
-    </h2>
     <h3>Eléments forfaitisés</h3>
     <div class="col-md-4">
-        <?php if(isset($success)) { ?>
-            <!-- TODO : S'occuper de l'alerte -->
-            <div class="alert alert-success" role="alert" data-dismiss="alert">
-                Les modifications ont bien été enregistrées !
-                <button type="button" class="close" data-dismiss="alert" aria-label="Close">
-                    <span aria-hidden="true">&times;</span>
-                </button>
-            </div>
-        <?php } ?>
-
         <form method="post"
-              action="index.php?uc=validerFrais&action=validerMajFraisForfait"
+              action="index.php?uc=validerFrais&action=validerMajFraisForfait""
               role="form">
             <fieldset>
                 <?php
@@ -42,21 +29,39 @@ namespace gsb;
                     $idFrais = $unFrais['idfrais'];
                     $libelle = htmlspecialchars($unFrais['libelle']);
                     $quantite = $unFrais['quantite']; ?>
-                    <div class="form-group row col-md-10 col-lg-7">
+                    <div class="form-group">
                         <label for="idFrais"><?php echo $libelle ?></label>
                         <input type="text" id="idFrais"
                                name="lesFrais[<?php echo $idFrais ?>]"
-                               size="4" maxlength="5"
+                               size="10" maxlength="5"
                                value="<?php echo $quantite ?>"
                                class="form-control">
                     </div>
                     <?php
                 }
                 ?>
-                <div class="row col-md-10 col-lg-9">
-                    <button class="btn btn-success" type="submit">Corriger</button>
-                    <button class="btn btn-danger" type="reset">Réinitialiser</button>
+
+                <div class="form-group">
+                    <label for="lesFrais[VEH]">Type de véhicule</label>
+                    <select class="form-control" id="lesFrais[VEH]" name="lesFrais[VEH]">
+                        <?php
+                        foreach($lesVehicules as $leVehicule) {
+                            if($leVehicule['id'] == $infosFicheFrais['idvehicule']) {
+                                ?>
+                                <option value="<?php echo $leVehicule['id']; ?>" selected="selected"><?php echo $leVehicule['nom']; ?></option>
+                                <?php
+                            } else {
+                                ?>
+                                <option value="<?php echo $leVehicule['id']; ?>"><?php echo $leVehicule['nom']; ?></option>
+                                <?php
+                            }
+                        }
+                        ?>
+                    </select>
                 </div>
+
+                <button class="btn btn-success" type="submit">Ajouter</button>
+                <button class="btn btn-danger" type="reset">Effacer</button>
             </fieldset>
         </form>
     </div>

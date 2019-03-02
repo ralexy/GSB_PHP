@@ -11,7 +11,7 @@
  * @author    Alexy ROUSSEAU <contact@alexy-rousseau.com>
  * @copyright 2017-2019 Réseau CERTA
  * @license   Réseau CERTA
- * @version   GIT: <12>
+ * @version   GIT: <13>
  * @link      http://www.reseaucerta.org Contexte « Laboratoire GSB »
  */
 
@@ -22,7 +22,7 @@ namespace gsb;
         Sélection des fiches de frais
     </h2>
     <form action="index.php?uc=suivreFrais"
-          method="post" role="form">
+          method="post" role="form" class="form-inline">
         <div class="form-group">
             <label for="lstFiches" accesskey="n">Fiche de frais : </label>
             <select id="lstFiches" name="lstFiches" class="form-control">
@@ -105,14 +105,20 @@ namespace gsb;
                 ?>
             </table>
         </div>
-        <form method="post" action="index.php?uc=suivreFrais&action=miseEnPaiementFiche">
-            <input type="submit" name="paiement" value="Mettre en paiement" class="btn btn-info">
-            <input type="submit" name="remboursement" value="Mettre en remboursement" class="btn btn-success">
-        </form>
 
-        <form method="post" action="index.php?uc=suivreFrais&action=export">
-            <input type="submit" name="export" value="Exporter au format PDF" class="btn">
-        </form>
+        <div class="panel">
+            <div class="row md-12">
+                <div class="col-md-6">
+                    <form method="post" action="index.php?uc=suivreFrais&action=miseEnPaiementFiche" class="form-inline">
+                        <button type="submit" name="paiement" class="btn btn-info">Mettre en paiement</button>
+                        <button type="submit" name="remboursement" class="btn btn-success">Mettre en remboursement</button>
+                    </form>
+                </div>
+                <div class="col-md-6">
+                    <a href="index.php?uc=suivreFrais&action=export" class="btn btn-default pull-right" role="button" target="_blank">Exporter au format pdf</a>
+                </div>
+            </div>
+        </div>
         <?php
     }
     ?>

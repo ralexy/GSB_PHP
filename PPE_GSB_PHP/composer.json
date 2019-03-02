@@ -1,0 +1,6 @@
+{
+    "require": {
+        "phpdocumentor/phpdocumentor": "2.*",
+        "mpdf/mpdf": "^7.1"
+    }
+}
