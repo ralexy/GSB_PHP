@@ -18,7 +18,7 @@
 /**
  * Autoload de Composer
  */
-require __DIR__ .'/../../vendor/autoload.php';
+require __DIR__ . '/../../vendor/autoload.php';
 
 /**
  * On récupère les fiches validées
@@ -114,7 +114,7 @@ case'selectionnerMois':
 break;
 
 case 'export':
-    $storagePath = __DIR__. '/../pdf/';
+    $storagePath = __DIR__ . '/../pdf/';
     $filePath    = $storagePath . $idVisiteur. '_'. $idMois. '.pdf';
 
     /**
@@ -130,7 +130,7 @@ case 'export':
         ob_end_clean();
 
         ob_start();
-        include( __DIR__. '/../remboursement.php');
+        include(__DIR__ . '/../remboursement.php');
         $pdfContent = ob_get_clean();
 
         /**

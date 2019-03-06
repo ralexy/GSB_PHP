@@ -125,7 +125,7 @@ $total = 0;
 </head>
 <body>
 
-<p class="center"><img src="./images/logo.jpg" width="96" height="61"></p>
+<p class="center"><img src="images/logo.jpg" width="96" height="61"></p>
 <table>
     <tr>
         <th colspan="4">Remboursement des frais engages</th>
@@ -226,6 +226,6 @@ $total = 0;
     Fait à Paris, le <?php echo ucwords(strftime("%d %B %G", strtotime("now"))); ?><br />
     Vu l'agent comptable
 </p>
-<p class="right tableSize"><img src="./images/signature.jpg"></p>
+<p class="right tableSize"><img src="images/signature.jpg"></p>
 </body>
 </html>
