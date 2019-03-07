@@ -239,8 +239,8 @@ CREATE TABLE `membre` (
 --
 
 INSERT INTO `membre` (`id`, `nom`, `prenom`, `login`, `mdp`, `ancienmdp`, `adresse`, `cp`, `ville`, `dateembauche`, `idrang`) VALUES
-('a131', 'Villechalane', 'Louis', 'toto', '$2y$12$z/sh./.zxLHzkyuFML0VnutSaT3qdBHg8Hzrq7200h2637nrJLpUu', 'toto', '8 rue des Charmes', '46000', 'Cahors', '2005-12-21', 2),
-('a17', 'Andre', 'David', 'dandre', '$2y$12$aWPGbix3UsWC0i35dcjAk.Gwc6FemyPJBB3O8isGmHHV36G4wQL8G', 'oppg5', '1 rue Petit', '46200', 'Lalbenque', '1998-11-23', 1),
+('a131', 'Villechalane', 'Louis', 'comptable', '$2a$12$cmdpJ4SYnllZiSyRaX.PWeV9DyHqogpuZZhImSdBN6Y41g0UFKi0a', 'comptable', '8 rue des Charmes', '46000', 'Cahors', '2005-12-21', 2),
+('a17', 'Andre', 'David', 'dandre', '$2y$12$aWPGbix3UsWC0i3z5dcjAk.Gwc6FemyPJBB3O8isGmHHV36G4wQL8G', 'oppg5', '1 rue Petit', '46200', 'Lalbenque', '1998-11-23', 1),
 ('a55', 'Bedos', 'Christian', 'cbedos', '$2y$12$7m1EjR9yOJ/pHIxoLVDkVOKHElmw0npgeVyDVxH.3LksLtlqATRHe', 'gmhxd', '1 rue Peranud', '46250', 'Montcuq', '1995-01-12', 1),
 ('a93', 'Tusseau', 'Louis', 'ltusseau', '$2y$12$ttt8TYlrmW1Tu.9zlnO6puJoPMRQmRwKThKu15GowSHJsvkzbw33m', 'ktp3s', '22 rue des Ternes', '46123', 'Gramat', '2000-05-01', 1),
 ('b13', 'Bentot', 'Pascal', 'pbentot', '$2y$12$OU/OgIhiLjzyGFDX.2ciXOUFEdR3a/51inXX5MWUCuGEUrvamHZNO', 'doyw1', '11 allée des Cerises', '46512', 'Bessines', '1992-07-09', 1),

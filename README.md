@@ -64,8 +64,8 @@ Mot de passe : ktp3s
 Et pour le comptable :
 
 ```
-Utilisateur : toto
-Mot de passe : toto
+Utilisateur : comptable
+Mot de passe : comptable
 ```
 
 L'application est directement consultable ici : https://gsb.alexy-rousseau.com
