@@ -36,7 +36,17 @@ Le fichier composer.json se trouve à la racine du projet, il suffira d'installe
 composer update
 ```
 
-Ne pas oublier de donner les permission en écriture à PHP pour le dossier d'export pdf **/www/pdf/** (chmod 755 pour les systèmes basés sur unix).
+Ne pas oublier de donner les permissions en écriture à PHP pour le dossier d'export pdf **/www/pdf/** (chown et chmod 755 pour les systèmes basés sur unix).
+
+Pour un serveur Apache sous Debian par exemple (il faudra adapter ces commandes à votre environnement serveur) :
+
+```
+cd /var/www/html/
+find . -type d -exec chmod 0755 {} \;
+find . -type f -exec chmod 0644 {} \;
+sudo chown www-data:www-data -R *;
+service apache2 restart;
+```
 
 ## Tester l'application
 
@@ -57,6 +67,9 @@ Et pour le comptable :
 Utilisateur : toto
 Mot de passe : toto
 ```
+
+L'application est directement consultable ici : https://gsb.alexy-rousseau.com
+
 ### Documentation PHPDocumentor
 La documentation PHPDoc du projet est directement consultable dans le dossier **/documentation/index.html** à la racine du projet.
 
