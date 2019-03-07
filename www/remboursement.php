@@ -34,7 +34,7 @@ if (!$estComptable) {
 $donneesFiche = [
     'id'          => $idVisiteur,
     'nom'         => strtoupper($infosFiche['nom']). ' '. $infosFiche['prenom'],
-    'mois'        => strftime("%B %Y", (new DateTime($infosFiche['mois']))->getTimestamp()),
+    'mois'        => strftime("%B %Y", (new DateTime(substr_replace($infosFiche['mois'], '-', -2, 0)))->getTimestamp()), // Formatage de la date avec un tirer pour ne pas avoir d'erreur d'interprétation du mois par PHP
     'total'       => $infosFiche['montantValide'],
     'indemnitekm' => $infosFiche['indemnitekm'],
 
@@ -50,9 +50,6 @@ foreach($lesFraisForfait as $leFraisForfait) {
         'montantUnitaire' => $leFraisForfait['montant']
     ];
 }
-
-//var_dump($lesFraisHorsForfait);
-//die;
 
 foreach($lesFraisHorsForfait as $leFraisHorsForfait) {
     $donneesFiche['fraisHorsForfait'][] = [
@@ -214,7 +211,7 @@ $total = 0;
     </tr>
     <tr>
         <td colspan="2"></td>
-        <td>Total <?php echo (new DateTime($infosFiche['mois']))->format('m/Y'); ?></td>
+        <td>Total <?php echo (new DateTime(substr_replace($infosFiche['mois'], '-', -2, 0)))->format('m/Y'); ?></td>
         <td class="right totalSize"><?php echo number_format($total, 2); ?></td>
     </tr>
     <tr class="noBorder">
