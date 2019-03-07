@@ -15,7 +15,7 @@
  * @link      http://www.reseaucerta.org Contexte « Laboratoire GSB »
  */
 
-setlocale(LC_ALL,'fr_FR');
+setlocale(LC_ALL, 'fr','fr_FR','fr_FR@euro','fr_FR.UTF8','fr-FR','fra');
 
 require_once 'includes/fct.inc.php';
 require_once 'includes/class.pdogsb.inc.php';
