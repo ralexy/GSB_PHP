@@ -136,7 +136,7 @@ $total = 0;
     </tr>
     <tr>
         <td>Mois</td>
-        <td><?php echo ucwords($donneesFiche['mois']); ?></td>
+        <td><?php echo utf8_encode(ucwords($donneesFiche['mois'])); ?></td>
     </tr>
     <tr>
         <td colspan="3"></td>
@@ -219,7 +219,7 @@ $total = 0;
     </tr>
 </table>
 <p class="right tableSize">
-    Fait à Paris, le <?php echo ucwords(strftime("%d %B %G", strtotime("now"))); ?><br />
+    Fait à Paris, le <?php echo utf8_encode(ucwords(strftime("%d %B %G", strtotime("now")))); ?><br />
     Vu l'agent comptable
 </p>
 <p class="right tableSize"><img src="./images/signature.jpg"></p>
