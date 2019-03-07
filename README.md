@@ -8,7 +8,7 @@ Ces instructions vous permettront de récupérer ce projet et de le lancer sur u
 
 ### Prérequis
 
-Vous devez posséder un seveur web et y installer
+Vous devez posséder un serveur web et y installer
 
 ```
 PHP 7 & MySQL
