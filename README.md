@@ -52,9 +52,6 @@ service apache2 restart;
 
 Vous pouvez tester l'application avec des comptes utilisateurs ou comptable, il vous suffira d'utiliser ces couples d'identifiants pour les visiteurs :
 ```
-Utilisateur : dandre
-Mot de passe : oppg5
-
 Utilisateur : cbedos
 Mot de passe : gmhxd
 
