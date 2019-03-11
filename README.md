@@ -68,7 +68,7 @@ Mot de passe : comptable
 L'application est directement consultable ici : https://gsb.alexy-rousseau.com
 
 ### Documentation PHPDocumentor
-La documentation PHPDoc du projet est directement consultable dans le dossier **/documentation/index.html** à la racine du projet.
+La documentation PHPDoc du projet est accessible via : https://gsb.alexy-rousseau.com/documentation/
 
 ## Conçu avec
 
