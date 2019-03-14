@@ -26,31 +26,33 @@ namespace gsb;
                 <div class="form-group">
                     <select id="lstVisiteurs" name="lstVisiteurs" class="form-control">
                         <?php
-                        foreach ($lesVisiteurs as $leVisiteur) {
-                            $id = $leVisiteur['id'];
-                            $nom = $leVisiteur['nom'];
-                            $prenom = $leVisiteur['prenom'];
+                        foreach ($lesFiches as $uneFiche) {
+                            $id = $uneFiche['id'];
+                            $nom = $uneFiche['nom'];
+                            $prenom = $uneFiche['prenom'];
 
-                            if($id == $idVisiteur) {
+                            if ($id == $idVisiteur) {
                                 ?>
-                                <option selected="selected" value="<?php echo $id ?>">
-                                    <?php echo strtoupper($nom) . ' ' . $prenom ?> </option>
+                                <option value="<?php echo $id; ?>" selected="selected">
+                                    <?php echo strtoupper($nom) . ' ' . $prenom; ?> </option>
                                 <?php
                             }
-                            else {
+                            else
+                            {
                                 ?>
-                                <option value="<?php echo $id ?>">
-                                <?php echo strtoupper($nom) . ' ' . $prenom ?> </option>
+                                <option value="<?php echo $id; ?>">
+                                    <?php echo strtoupper($nom) . ' ' . $prenom; ?> </option>
                                 <?php
                             }
-                        } ?>
+                        }
+                            ?>
 
                     </select>
                 </div>
 
                 <label for="lstMois" accesskey="n">Mois : </label>
                 <div class="form-group">
-                    <select id="lstMois" name="lstMois" class="form-control">
+                    <select id="lstMois" name="lstMois" class="form-control" <?php echo (!$idVisiteur) ? 'disabled' : ''; ?>>
                         <?php
                         foreach ($lesMoisDisponibles as $unMois) {
                             $mois = $unMois['mois'];
@@ -71,6 +73,8 @@ namespace gsb;
                         ?>
                     </select>
                 </div>
+
+                <input id="ok" type="submit" value="OK" class="btn btn-success" role="button">
         </div>
     </form>
 </div>
