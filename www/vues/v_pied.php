@@ -17,6 +17,7 @@
 
 namespace gsb;
 ?>
+            </div>
         </div>
         <script src="scripts/select.js"></script>
     </body>

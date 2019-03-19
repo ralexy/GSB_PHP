@@ -547,10 +547,10 @@ class PdoGsb
             );
             $requetePrepare->bindParam(':unIdEtat', $idEtat, PDO::PARAM_STR);
             $requetePrepare->execute();
-        } elseif(!$idEtat && $idMembre) {
+        } elseif($idMembre && !$idEtat) {
             $requetePrepare = PdoGSB::$monPdo->prepare(
                 'SELECT DISTINCT fichefrais.mois AS mois FROM fichefrais '
-                . 'WHERE fichefrais.idMembre = :unIdMembre '
+                . 'WHERE fichefrais.idmembre = :unIdMembre '
                 . 'ORDER BY fichefrais.mois DESC'
             );
             $requetePrepare->bindParam(':unIdMembre', $idMembre, PDO::PARAM_STR);
@@ -566,7 +566,6 @@ class PdoGsb
             $requetePrepare->bindParam(':unIdMembre', $idMembre, PDO::PARAM_STR);
             $requetePrepare->execute();
         }
-
         foreach($requetePrepare->fetchAll() as $laLigne) {
             $mois = $laLigne['mois'];
             $numAnnee = substr($mois, 0, 4);
@@ -578,7 +577,9 @@ class PdoGsb
             );
         }
 
-        return $lesMois;
+        if(isset($lesMois)) {
+            return $lesMois;
+        }
     }
 
     /**
