@@ -655,7 +655,7 @@ class PdoGsb
     public function majEtatFicheFrais($idMembre, $mois, $etat)
     {
         $requetePrepare = PdoGSB::$monPdo->prepare(
-            'UPDATE ficheFrais '
+            'UPDATE fichefrais '
             . 'SET idetat = :unEtat, datemodif = now() '
             . 'WHERE fichefrais.idmembre = :unIdMembre '
             . 'AND fichefrais.mois = :unMois'
