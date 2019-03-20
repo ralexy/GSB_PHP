@@ -328,7 +328,7 @@ class PdoGsb
             . 'SET lignefraishorsforfait.libelle = CONCAT(:unLibelleAccepte, lignefraishorsforfait.libelle) '
             . 'WHERE idmembre = :unIdMembre '
             . 'AND mois = :unMois '
-            . 'AND lignefraishorsforfait.libelle NOT LIKE :unLibelleRefuse'
+            . 'AND lignefraishorsforfait.libelle NOT LIKE :unLibelleAccepte'
             . 'AND lignefraishorsforfait.libelle NOT LIKE :unLibelleRefuse'
         );
         $requetePrepare->bindParam(':unLibelleAccepte', $unLibelleAccepte, PDO::PARAM_STR);
