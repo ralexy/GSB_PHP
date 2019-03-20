@@ -539,7 +539,7 @@ class PdoGsb
      */
     public function getLesMoisDisponibles($idMembre = false, $idEtat = false)
     {
-        if($idEtat) {
+        if(!$idMembre && $idEtat) {
             $requetePrepare = PdoGSB::$monPdo->prepare(
                 'SELECT DISTINCT fichefrais.mois AS mois FROM fichefrais '
                 . 'WHERE fichefrais.idetat = :unIdEtat '
@@ -547,16 +547,25 @@ class PdoGsb
             );
             $requetePrepare->bindParam(':unIdEtat', $idEtat, PDO::PARAM_STR);
             $requetePrepare->execute();
-        } else {
+        } elseif($idMembre && !$idEtat) {
             $requetePrepare = PdoGSB::$monPdo->prepare(
                 'SELECT DISTINCT fichefrais.mois AS mois FROM fichefrais '
-                . 'WHERE fichefrais.idMembre = :unIdMembre '
+                . 'WHERE fichefrais.idmembre = :unIdMembre '
                 . 'ORDER BY fichefrais.mois DESC'
             );
             $requetePrepare->bindParam(':unIdMembre', $idMembre, PDO::PARAM_STR);
             $requetePrepare->execute();
+        } else {
+            $requetePrepare = PdoGSB::$monPdo->prepare(
+                'SELECT DISTINCT fichefrais.mois AS mois FROM fichefrais '
+                . 'WHERE fichefrais.idetat = :unIdEtat '
+                . 'AND fichefrais.idmembre = :unIdMembre '
+                . 'ORDER BY fichefrais.mois DESC'
+            );
+            $requetePrepare->bindParam(':unIdEtat', $idEtat, PDO::PARAM_STR);
+            $requetePrepare->bindParam(':unIdMembre', $idMembre, PDO::PARAM_STR);
+            $requetePrepare->execute();
         }
-
         foreach($requetePrepare->fetchAll() as $laLigne) {
             $mois = $laLigne['mois'];
             $numAnnee = substr($mois, 0, 4);
@@ -568,7 +577,9 @@ class PdoGsb
             );
         }
 
-        return $lesMois;
+        if(isset($lesMois)) {
+            return $lesMois;
+        }
     }
 
     /**
@@ -677,6 +688,26 @@ class PdoGsb
         );
 
         return $requetePrepare->fetchAll();
+    }
+
+    /**
+     * Récupère la liste des fiches de frais clôturées
+     * @return array $listeSuiviFrais Tableau associatif à plusieurs dimensions
+     * contenant toutes les fiches et ses infos rattachées
+     */
+    public function getListeFicheFraisCloturees()
+    {
+        $requetePrepare = PdoGSB::$monPdo->query(
+            'SELECT membre.id  AS id, '
+            . 'membre.nom  AS nom, '
+            . 'membre.prenom AS prenom '
+            . 'FROM membre JOIN fichefrais '
+            . 'ON membre.id = fichefrais.idmembre '
+            . 'WHERE fichefrais.idetat = "CL" '
+            . 'GROUP BY membre.id'
+        );
+
+        return $requetePrepare->fetchAll(\PDO::FETCH_ASSOC|\PDO::FETCH_PROPS_LATE); // Utile pour que le GROUP BY fonctionne
     }
 
     /**

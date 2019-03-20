@@ -39,7 +39,7 @@ namespace gsb;
                 <div class="row vertical-align">
                     <div class="col-md-4">
                         <h1>
-                            <img src="./images/logo.jpg" class="img-responsive" 
+                            <img src="./images/logo.png" class="img-responsive"
                                  alt="Laboratoire Galaxy-Swiss Bourdin" 
                                  title="Laboratoire Galaxy-Swiss Bourdin">
                         </h1>
@@ -92,24 +92,25 @@ namespace gsb;
                     </div>
                 </div>
             </div>
-            <?php
-                if(isset($_SESSION['flash'])) {
+            <div class="content">
+                <?php
+                    if(isset($_SESSION['flash'])) {
+                        ?>
+                        <div class="alert alert-info" role="alert">
+                            <p><?php echo $_SESSION['flash']?></p>
+                        </div>
+                        <?php
+                    }
+                    unset($_SESSION['flash']);
+                ?>
+                <?php
+                } else {
                     ?>
-                    <div class="alert alert-info" role="alert">
-                        <p><?php echo $_SESSION['flash']?></p>
-                    </div>
+                    <h1>
+                        <img src="./images/logo.png"
+                             class="img-responsive center-block"
+                             alt="Laboratoire Galaxy-Swiss Bourdin"
+                             title="Laboratoire Galaxy-Swiss Bourdin">
+                    </h1>
                     <?php
                 }
-                unset($_SESSION['flash']);
-            ?>
-            <?php
-            } else {
-                ?>   
-                <h1>
-                    <img src="./images/logo.jpg"
-                         class="img-responsive center-block"
-                         alt="Laboratoire Galaxy-Swiss Bourdin"
-                         title="Laboratoire Galaxy-Swiss Bourdin">
-                </h1>
-                <?php
-            }

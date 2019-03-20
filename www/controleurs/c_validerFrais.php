@@ -15,18 +15,18 @@
  * @link      http://www.reseaucerta.org Contexte « Laboratoire GSB »
  */
 
-// On créé nos variable de session si elles n'existent pas
+// On créé nos variables de session si elles n'existent pas
 if(empty($_SESSION['moisChoisi']) || empty($_SESSION['idVisiteurChoisi'])) {
     $_SESSION['moisChoisi'] = '';
     $_SESSION['idVisiteurChoisi'] = '';
 }
 
 $idMembre              = $_SESSION['idMembre'];
-$lesVisiteurs          = $pdo->getListeVisiteurs();
+$lesFiches             = $pdo->getListeFicheFraisCloturees();
 $action                = filter_input(INPUT_GET, 'action', FILTER_SANITIZE_STRING);
 $moisChoisi            = isset($_POST['lstMois']) ? filter_input(INPUT_POST, 'lstMois', FILTER_SANITIZE_STRING) : $_SESSION['moisChoisi']; // Permet de selectionner dans le select le bon mois
 $idVisiteur            = isset($_POST['lstVisiteurs']) ? filter_input(INPUT_POST, 'lstVisiteurs', FILTER_SANITIZE_STRING) : $_SESSION['idVisiteurChoisi'];
-$lesMoisDisponibles    = $pdo->getLesMoisDisponibles(false, 'CL');
+$lesMoisDisponibles    = $pdo->getLesMoisDisponibles($idVisiteur, 'CL');
 $mois                  = substr($moisChoisi, 0, 4);
 $annee                 = substr($moisChoisi, 4, 2);
 $lesVehicules          = $pdo->getLesVehicules();
@@ -42,8 +42,8 @@ switch ($action) {
         // On n'affiche que les fiches à l'état clôturé
         if($pdo->getLesInfosFicheFrais($idVisiteur, $moisChoisi, 'CL')) {
             // On fait une recherche de la clé du tableau associatif correspondant à notre visiteur pour le sélectionner dans notre variable $leVisiteur
-            $matchedKey = array_search($idVisiteur, array_column($lesVisiteurs, 'id'));
-            $leVisiteur = $lesVisiteurs[$matchedKey];
+            $matchedKey = array_search($idVisiteur, array_column($lesFiches, 'idmembre'));
+            $leVisiteur = $lesFiches[$matchedKey];
 
             $lesFraisHorsForfait = $pdo->getLesFraisHorsForfait($idVisiteur, $moisChoisi);
             $lesFraisForfait = $pdo->getLesFraisForfait($idVisiteur, $moisChoisi);
@@ -54,8 +54,6 @@ switch ($action) {
             } else {
                 require 'vues/comptable/v_fraisHorsForfaitVide.php';
             }
-        } else {
-            require 'vues/comptable/v_fraisHorsForfaitVide.php';
         }
         break;
 
