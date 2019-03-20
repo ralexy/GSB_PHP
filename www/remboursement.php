@@ -170,7 +170,15 @@ $total = 0;
                 }
                 ?>
             </td>
-            <td class="right totalSize"><?php echo number_format($ligneFraisForfait['quantite'] * $ligneFraisForfait['montantUnitaire'], 2); ?></td>
+            <td class="right totalSize">
+            <?php
+                if($ligneFraisForfait['id'] != 'KM') {
+                    echo number_format($ligneFraisForfait['quantite'] * $ligneFraisForfait['montantUnitaire'], 2);
+                } else {
+                    echo number_format($ligneFraisForfait['quantite'] * $donneesFiche['indemnitekm'], 2);
+                }
+            ?>
+            </td>
         </tr>
         <?php
     }
