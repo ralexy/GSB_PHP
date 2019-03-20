@@ -52,7 +52,7 @@ namespace gsb;
 
                 <label for="lstMois" accesskey="n">Mois : </label>
                 <div class="form-group">
-                    <select id="lstMois" name="lstMois" class="form-control" <?php echo (!$idVisiteur) ? 'disabled' : ''; ?>>
+                    <select id="lstMois" name="lstMois" class="form-control">
                         <?php
                         foreach ($lesMoisDisponibles as $unMois) {
                             $mois = $unMois['mois'];
