@@ -334,7 +334,7 @@ class PdoGsb
         $requetePrepare->bindParam(':unLibelleAccepte', $unLibelleAccepte, PDO::PARAM_STR);
         $requetePrepare->bindParam(':unIdMembre', $idMembre, PDO::PARAM_STR);
         $requetePrepare->bindParam(':unMois', $mois, PDO::PARAM_STR);
-        $requetePrepare->bindParam(':unLibelleRefuse', $unLibelleRefuse, PDO::PARAM_STR);
+        $requetePrepare->bindParam(':unLibelleRefuse', $unLibelleDejaRefuse, PDO::PARAM_STR);
         $requetePrepare->execute();
     }
 
