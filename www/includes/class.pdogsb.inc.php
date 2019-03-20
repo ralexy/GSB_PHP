@@ -320,21 +320,16 @@ class PdoGsb
      */
     public function validerFraisHorsForfait($idMembre, $mois)
     {
-        $unLibelleAccepte = 'ACCEPTE : ';
-        $unLibelleDejaRefuse = 'REFUSE%';
-
         $requetePrepare = PdoGSB::$monPdo->prepare(
             'UPDATE lignefraishorsforfait '
-            . 'SET lignefraishorsforfait.libelle = CONCAT(:unLibelleAccepte, lignefraishorsforfait.libelle) '
+            . 'SET lignefraishorsforfait.libelle = CONCAT(`ACCEPTE : `, lignefraishorsforfait.libelle) '
             . 'WHERE idmembre = :unIdMembre '
             . 'AND mois = :unMois '
-            . 'AND lignefraishorsforfait.libelle NOT LIKE :unLibelleAccepte'
-            . 'AND lignefraishorsforfait.libelle NOT LIKE :unLibelleRefuse'
+            . 'AND lignefraishorsforfait.libelle NOT LIKE `ACCEPTE%`'
+            . 'AND lignefraishorsforfait.libelle NOT LIKE `REFUSE%`'
         );
-        $requetePrepare->bindParam(':unLibelleAccepte', $unLibelleAccepte, PDO::PARAM_STR);
         $requetePrepare->bindParam(':unIdMembre', $idMembre, PDO::PARAM_STR);
         $requetePrepare->bindParam(':unMois', $mois, PDO::PARAM_STR);
-        $requetePrepare->bindParam(':unLibelleRefuse', $unLibelleDejaRefuse, PDO::PARAM_STR);
         $requetePrepare->execute();
     }
 
