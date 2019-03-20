@@ -334,7 +334,7 @@ class PdoGsb
     }
 
     /**
-     * Met à jour le nombre de justificatifs de la table ficheFrais
+     * Met à jour le nombre de justificatifs de la table fichefrais
      * pour le mois et le membre concerné
      *
      * @param String  $idMembre        ID du membre
@@ -631,7 +631,7 @@ class PdoGsb
     public function majFraisValideFicheFrais($idMembre, $mois, $montantvalide)
     {
       $requetePrepare = PdoGSB::$monPdo->prepare(
-          'UPDATE ficheFrais '
+          'UPDATE fichefrais '
           . 'SET montantvalide = :montantvalide '
           . 'WHERE fichefrais.idmembre = :unIdMembre '
           . 'AND fichefrais.mois = :unMois'
