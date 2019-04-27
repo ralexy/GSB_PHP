@@ -44,8 +44,19 @@ namespace gsb;
                             <td><input type="text" name="txtMontantHF" value="<?php echo $montant ?>" placeholder="Montant"> </td>
                             <td>
                                 <input type="hidden" name="idLigneHF" value="<?php echo $id; ?>">
-                                <input type="submit" name="action" value="Refuser" class="btn btn-danger">
-                                <input type="submit" name="action" value="Reporter" class="btn btn-info">
+
+                                <?php
+                                // Les boutons de report & refus s'affichent seulement si le frais n'a pas été refusé au préalable
+                                if(!preg_match('#^'. LABEL_REFUSE .'#', $libelle)) {
+                                    ?>
+                                    <input type="submit" name="action" value="Refuser" class="btn btn-danger">
+                                    <input type="submit" name="action" value="Reporter" class="btn btn-info">
+                                    <?php
+                                } else
+                                {
+                                    echo 'Frais refusés, actions désactivées';
+                                }
+                                ?>
                             </td>
                         </form>
                     </tr>

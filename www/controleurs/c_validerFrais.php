@@ -96,13 +96,16 @@ switch ($action) {
             }
 
             $_SESSION['flash'] = 'Le frais HF a bien été refusé.';
-        } elseif ($formAction == 'Reporter') {
+        } elseif ($formAction == 'Reporter' && !preg_match('#^'. LABEL_REFUSE .'#', $libelleHF)) {
             /**
              * On passe par l'objet DateTime pour manipuler la date,
              * c'est beaucoup plus simple et plus puissant que de jongler avec les méthodes de PHP qui,
              * au final font la même chose de façon plus verbeuse
+             *
+             * Récupération du mois de la fiche et ajout d'un mois pour le report
              */
-            $dateMoisSuivant = (new DateTime('first day of this month'))->modify('+1 month')
+            $dateMoisSuivant = (new DateTime($moisChoisi. '01'))
+                ->modify('+1 month')
                 ->format('d/m/Y');
             $moisSuivant = getMois($dateMoisSuivant); // On finit par utiliser notre méthode getMois pour avoir la date au format souhaité
 
