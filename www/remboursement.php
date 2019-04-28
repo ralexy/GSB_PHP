@@ -53,7 +53,7 @@ foreach($lesFraisForfait as $leFraisForfait) {
 
 foreach($lesFraisHorsForfait as $leFraisHorsForfait) {
     $donneesFiche['fraisHorsForfait'][] = [
-        'date'            => $leËFraisHorsForfait['date'],
+        'date'            => $leFraisHorsForfait['date'],
         'libelle'         => $leFraisHorsForfait['libelle'],
         'montantUnitaire' => $leFraisHorsForfait['montant']
     ];
